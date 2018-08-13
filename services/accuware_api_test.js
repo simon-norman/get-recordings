@@ -1,19 +1,43 @@
 
 const { expect } = require('chai');
+const sinon = require('sinon');
 
-const { registerForLocationData } = require('./accuware_api.js');
+const accuwareApiFactory = require('./accuware_api.js');
 
 
 describe('accuware_api', () => {
   it('should call accuware api with specified parameters', async () => {
-    // register to receive data with very small interval
-    // check that api called with specified parameters
-    registerDependency('diMockDependency1', './di_mock_dependency_1.js');
-    registerFactory('diMockDependency2', './di_mock_dependency_2.js');
-    registerFactory('diMockModule', './di_mock_module.js');
-    const diMockModule = getDependency('diMockModule');
-    expect(diMockModule.diMockDependency1).to.equal(diMockDependency1);
-    expect(diMockModule.diMockDependency2.id).to.equal(1);
+    const accuwareGetStub = sinon.stub();
+    accuwareGetStub.returns({ device: 'devicedata' });
+    const accuwareApi = accuwareApiFactory(accuwareGetStub);
+    const locationsCallParams = {
+      siteId: '10',
+      includeLocations: 'yes',
+      devicesToInclude: 'all',
+      intervalPeriodInSeconds: 1,
+      areas: 'yes',
+    };
+
+    accuwareApi.registerForDeviceLocations(locationsCallParams);
+    setTimeout(() => {
+      expect(accuwareGetStub.callCount)
+        .to.equal(locationsCallParams.intervalPeriodInSeconds / 2000);
+      expect(accuwareGetStub.alwaysCalledWithExactly(
+        `/sites/${locationsCallParams.siteId}/stations/`,
+        {
+          params: {
+            loc: locationsCallParams.includeLocations,
+            type: locationsCallParams.devicesToInclude,
+            lrrt: locationsCallParams.intervalPeriodInSeconds,
+            areas: locationsCallParams.areas,
+          },
+        },
+      )).to.be.true();
+    }, 2000);
   });
+/*   accuwareApi.registerForDeviceLocations()
+  .on('locationdata', (deviceLocations) => {
+    expect(accuwareGetStub)
+  }) */
 });
 
