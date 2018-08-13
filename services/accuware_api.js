@@ -1,7 +1,7 @@
 import stampit from 'stampit';
 
 module.exports = () => {
-  const accuwareApi = stampit({
+  const AccuwareApiFactory = stampit({
     props: {
       accuwareBaseUrl: 'https://its.accuware.com/api/v1',
       baseDeviceLocationsPath: '/sites/siteId/stations/',
@@ -27,8 +27,8 @@ module.exports = () => {
     },
 
     methods: {
-      registerForDeviceLocations() {
-        this.axios.get(
+      getDeviceLocations() {
+        return this.axios.get(
           `${this.finalDeviceLocationsPath}`,
           this.locationsCallParams,
         );
@@ -39,6 +39,6 @@ module.exports = () => {
       },
     },
   });
-  return accuwareApi;
+  return AccuwareApiFactory;
 };
 
