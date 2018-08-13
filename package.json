@@ -26,5 +26,8 @@
     "parse-fn-args": "^1.0.1",
     "sinon": "^4.5.0",
     "supertest": "^3.0.0"
+  },
+  "dependencies": {
+    "stampit": "^4.1.2"
   }
 }
