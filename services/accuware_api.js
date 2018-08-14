@@ -1,25 +1,28 @@
-import stampit from 'stampit';
+const stampit = require('stampit');
 
-module.exports = () => {
-  const AccuwareApiFactory = stampit({
+module.exports = (AxiosBaseApiStamp) => {
+  const AccuwareApiStamp = stampit({
     props: {
-      accuwareBaseUrl: 'https://its.accuware.com/api/v1',
       baseDeviceLocationsPath: '/sites/siteId/stations/',
+      locationsCallParams: {},
     },
 
     init({
-      axios,
       siteId,
       intervalPeriodInSeconds,
       includeLocations = 'yes',
       devicesToInclude = 'all',
       areas = 'yes',
     }) {
-      this.axios = axios.create({
-        baseURL: this.accuwareBaseUrl,
-        responseType: 'json',
-      });
-      this.locationsCallParams.setFinalDeviceLocationsPath(siteId);
+      if (!siteId) {
+        throw new TypeError('Site ID not provided to get device locations');
+      }
+
+      if (!intervalPeriodInSeconds) {
+        throw new TypeError('Interval period not provided to get device locations (e.g. get devices detected in last 15 seconds');
+      }
+
+      this.setFinalDeviceLocationsPath(siteId);
       this.locationsCallParams.lrrt = intervalPeriodInSeconds;
       this.locationsCallParams.loc = includeLocations;
       this.locationsCallParams.type = devicesToInclude;
@@ -39,6 +42,6 @@ module.exports = () => {
       },
     },
   });
-  return AccuwareApiFactory;
+  return AxiosBaseApiStamp.compose(AccuwareApiStamp);
 };
 

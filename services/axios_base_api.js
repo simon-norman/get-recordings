@@ -1,14 +1,19 @@
-import stampit from 'stampit';
+const stampit = require('stampit');
+const axios = require('axios');
 
-module.exports = () => {
-  const AxiosBaseApiFactory = stampit({
-    init({ axios, baseUrl }) {
+module.exports = (baseUrl) => {
+  const AxiosBaseApiStamp = stampit({
+    props: {
+      baseUrl,
+    },
+
+    init() {
       this.axios = axios.create({
-        baseURL: baseUrl,
+        baseURL: this.baseUrl,
         responseType: 'json',
       });
     },
   });
-  return AxiosBaseApiFactory;
+  return AxiosBaseApiStamp;
 };
 
