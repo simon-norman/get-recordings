@@ -1,28 +1,31 @@
 
-const config = {
-
-  development: {
-    accuwareApi: {
-      baseUrl: process.env.MONGODB_URI,
+const configSharedAcrossEnvironments = {
+  accuwareApi: {
+    baseUrl: 'https://its.accuware.com/api/v1',
+    headers: {
+      authorization: {
+        username: process.env.ACCUWARE_API_USERNAME,
+        password: process.env.ACCUWARE_API_PASSWORD,
+      },
     },
+  },
+};
+
+const config = {
+  development: {
+    accuwareApi: configSharedAcrossEnvironments.accuwareApi,
   },
 
   test: {
-    accuwareApi: {
-      baseUrl: process.env.MONGODB_URI,
-    },
+    accuwareApi: configSharedAcrossEnvironments.accuwareApi,
   },
 
   qa: {
-    accuwareApi: {
-      baseUrl: process.env.MONGODB_URI,
-    },
+    accuwareApi: configSharedAcrossEnvironments.accuwareApi,
   },
 
   production: {
-    accuwareApi: {
-      baseUrl: process.env.MONGODB_URI,
-    },
+    accuwareApi: configSharedAcrossEnvironments.accuwareApi,
   },
 };
 

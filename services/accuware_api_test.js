@@ -9,7 +9,7 @@ const AccuwareApiStampFactory = require('./accuware_api.js');
 describe('accuware_api', () => {
   let stubbedDeviceLocations;
   let getStub;
-  let baseApiStamp;
+  let BaseApiStamp;
   let locationsCallParams;
   let AccuwareApiStamp;
   let accuwareApi;
@@ -18,7 +18,7 @@ describe('accuware_api', () => {
     stubbedDeviceLocations = 'devicelocations';
     getStub = sinon.stub();
     getStub.returns(stubbedDeviceLocations);
-    baseApiStamp = stampit({
+    BaseApiStamp = stampit({
       init() {
         this.get = getStub;
       },
@@ -40,7 +40,7 @@ describe('accuware_api', () => {
 
     setLocationsCallParams();
 
-    AccuwareApiStamp = AccuwareApiStampFactory(baseApiStamp);
+    AccuwareApiStamp = AccuwareApiStampFactory(BaseApiStamp);
     accuwareApi = AccuwareApiStamp(locationsCallParams);
   };
 
@@ -60,7 +60,7 @@ describe('accuware_api', () => {
 
       setLocationsCallParams();
 
-      AccuwareApiStamp = AccuwareApiStampFactory(baseApiStamp);
+      AccuwareApiStamp = AccuwareApiStampFactory(BaseApiStamp);
     });
 
     it('should throw error if site id not provided', async () => {

@@ -1,8 +1,10 @@
 
+const { wireUpApp } = require('./dependency_injection/app_wiring');
 const express = require('express');
 
-const app = express();
+wireUpApp();
 
+const app = express();
 const port = 500;
 
 app.listen(port);

@@ -1,6 +1,6 @@
 const stampit = require('stampit');
 
-module.exports = (baseApiStamp) => {
+module.exports = (BaseApiStamp) => {
   const AccuwareApiStamp = stampit({
     props: {
       baseDeviceLocationsPath: '/sites/siteId/stations/',
@@ -42,6 +42,6 @@ module.exports = (baseApiStamp) => {
       },
     },
   });
-  return baseApiStamp.compose(AccuwareApiStamp);
+  return AccuwareApiStamp.compose(BaseApiStamp);
 };
 

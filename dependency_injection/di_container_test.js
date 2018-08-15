@@ -1,7 +1,7 @@
 
 const { expect } = require('chai');
 
-const DiContainer = require('./di_container.js');
+const DiContainerStamp = require('./di_container.js');
 const { diMockDependency1 } = require('./di_mock_dependency_1.js');
 const diMockDependency2 = require('./di_mock_dependency_2.js');
 const diMockDependency3 = require('./di_mock_dependency_3.js');
@@ -12,7 +12,7 @@ describe('di_container', () => {
   let diContainer;
 
   beforeEach(() => {
-    diContainer = DiContainer();
+    diContainer = DiContainerStamp();
   });
 
   describe('successfully register and return dependencies', () => {
