@@ -8,23 +8,19 @@ const AccuwareApiStampFactory = require('./accuware_api.js');
 
 describe('accuware_api', () => {
   let stubbedDeviceLocations;
-  let axiosGetStub;
-  let axiosBaseApiStamp;
+  let getStub;
+  let baseApiStamp;
   let locationsCallParams;
   let AccuwareApiStamp;
   let accuwareApi;
 
   const setUpAxiosBaseApiStub = () => {
     stubbedDeviceLocations = 'devicelocations';
-    axiosGetStub = sinon.stub();
-    axiosGetStub.returns(stubbedDeviceLocations);
-    axiosBaseApiStamp = stampit({
-      props: {
-        axios: {},
-      },
-
+    getStub = sinon.stub();
+    getStub.returns(stubbedDeviceLocations);
+    baseApiStamp = stampit({
       init() {
-        this.axios.get = axiosGetStub;
+        this.get = getStub;
       },
     });
   };
@@ -44,7 +40,7 @@ describe('accuware_api', () => {
 
     setLocationsCallParams();
 
-    AccuwareApiStamp = AccuwareApiStampFactory(axiosBaseApiStamp);
+    AccuwareApiStamp = AccuwareApiStampFactory(baseApiStamp);
     accuwareApi = AccuwareApiStamp(locationsCallParams);
   };
 
@@ -64,7 +60,7 @@ describe('accuware_api', () => {
 
       setLocationsCallParams();
 
-      AccuwareApiStamp = AccuwareApiStampFactory(axiosBaseApiStamp);
+      AccuwareApiStamp = AccuwareApiStampFactory(baseApiStamp);
     });
 
     it('should throw error if site id not provided', async () => {
@@ -94,7 +90,7 @@ describe('accuware_api', () => {
     it('should call accuware api with specified parameters', async () => {
       await accuwareApi.getDeviceLocations();
 
-      expect(axiosGetStub.calledWithExactly(
+      expect(getStub.calledWithExactly(
         `/sites/${locationsCallParams.siteId}/stations/`,
         {
           loc: locationsCallParams.includeLocations,

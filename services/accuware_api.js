@@ -1,6 +1,6 @@
 const stampit = require('stampit');
 
-module.exports = (AxiosBaseApiStamp) => {
+module.exports = (baseApiStamp) => {
   const AccuwareApiStamp = stampit({
     props: {
       baseDeviceLocationsPath: '/sites/siteId/stations/',
@@ -31,7 +31,7 @@ module.exports = (AxiosBaseApiStamp) => {
 
     methods: {
       getDeviceLocations() {
-        return this.axios.get(
+        return this.get(
           `${this.finalDeviceLocationsPath}`,
           this.locationsCallParams,
         );
@@ -42,6 +42,6 @@ module.exports = (AxiosBaseApiStamp) => {
       },
     },
   });
-  return AxiosBaseApiStamp.compose(AccuwareApiStamp);
+  return baseApiStamp.compose(AccuwareApiStamp);
 };
 

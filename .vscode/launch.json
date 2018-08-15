@@ -51,7 +51,7 @@
     {
         "type": "node",
         "request": "launch",
-        "name": "Axios base api tests",
+        "name": "base api tests",
         "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
         "args": [
             "-u",
@@ -59,7 +59,22 @@
             "--timeout",
             "999999",
             "--colors",
-            "./{,!(node_modules)/**/}*axios_base_api_test.js"
+            "./{,!(node_modules)/**/}*base_api_test.js"
+        ],
+        "internalConsoleOptions": "openOnSessionStart"
+    },
+    {
+        "type": "node",
+        "request": "launch",
+        "name": "Config tests",
+        "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+        "args": [
+            "-u",
+            "tdd",
+            "--timeout",
+            "999999",
+            "--colors",
+            "./{,!(node_modules)/**/}*config_test.js"
         ],
         "internalConsoleOptions": "openOnSessionStart"
     },
