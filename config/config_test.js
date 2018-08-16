@@ -4,7 +4,7 @@ const { expect } = require('chai');
 const { getConfigForEnvironment } = require('./config.js');
 
 
-describe('di_container', () => {
+describe('config', () => {
   describe('get config for the specified environment', () => {
     it('should return config for the specified environment', async () => {
       const configForProduction = getConfigForEnvironment('production');

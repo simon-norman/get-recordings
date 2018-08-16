@@ -9,25 +9,13 @@ const wireUpApp = () => {
 
   const config = getConfigForEnvironment(process.env.NODE_ENV);
 
-  const apiConfig = config.accuwareApi;
+  const apiConfig = config.accuwareApi.baseConfig;
 
   diContainer.registerDependency('apiConfig', apiConfig);
 
   diContainer.registerDependencyFromFactory('BaseApiStamp', BaseApiStampFactory);
 
   diContainer.registerDependencyFromFactory('AccuwareApiStamp', AccuwareApiStampFactory);
-
-  const AccuwareApiStamp = diContainer.getDependency('AccuwareApiStamp');
-
-  const locationsCallParams = {
-    siteId: '10',
-    includeLocations: 'yes',
-    devicesToInclude: 'all',
-    intervalPeriodInSeconds: 1,
-    areas: 'yes',
-  };
-
-  const accuwareApiStamp = AccuwareApiStamp(locationsCallParams);
 };
 
 module.exports = { wireUpApp };

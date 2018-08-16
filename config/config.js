@@ -1,6 +1,6 @@
 
 const configSharedAcrossEnvironments = {
-  accuwareApi: {
+  accuwareApiConfig: {
     baseUrl: 'https://its.accuware.com/api/v1',
     headers: {
       authorization: {
@@ -13,19 +13,28 @@ const configSharedAcrossEnvironments = {
 
 const config = {
   development: {
-    accuwareApi: configSharedAcrossEnvironments.accuwareApi,
+    accuwareApi: {
+      baseConfig: configSharedAcrossEnvironments.accuwareApiConfig,
+      developmentSiteId: 1001,
+    },
   },
 
   test: {
-    accuwareApi: configSharedAcrossEnvironments.accuwareApi,
+    accuwareApi: {
+      baseConfig: configSharedAcrossEnvironments.accuwareApiConfig,
+    },
   },
 
   qa: {
-    accuwareApi: configSharedAcrossEnvironments.accuwareApi,
+    accuwareApi: {
+      baseConfig: configSharedAcrossEnvironments.accuwareApiConfig,
+    },
   },
 
   production: {
-    accuwareApi: configSharedAcrossEnvironments.accuwareApi,
+    accuwareApi: {
+      baseConfig: configSharedAcrossEnvironments.accuwareApiConfig,
+    },
   },
 };
 
