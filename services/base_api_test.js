@@ -5,7 +5,7 @@ const BaseApiStampFactory = require('./base_api.js');
 
 
 describe('base_api', () => {
-  it('should create api initiliased with the base URL and credentials', async () => {
+  it('should create api initiliased with the base URL and credentials', async function () {
     const apiConfig = {
       baseUrl: 'https://baseUrl.com',
       headers: {
@@ -26,8 +26,8 @@ describe('base_api', () => {
       .to.equal(apiConfig.headers.authorization.password);
   });
 
-  it('should throw error if api config not provided', async () => {
-    const createAccuwareApi = () => {
+  it('should throw error if api config not provided', async function () {
+    const createAccuwareApi = function () {
       BaseApiStampFactory();
     };
 

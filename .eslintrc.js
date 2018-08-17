@@ -4,7 +4,8 @@ module.exports = {
       "expect": true
     },
     "plugins": [
-      "chai-friendly"
+      "chai-friendly",
+      "mocha",
     ],
     "env": {
       "mocha": true,
@@ -17,6 +18,9 @@ module.exports = {
       "chai-friendly/no-unused-expressions": 2,
       "no-unused-expressions": 0,
       "no-underscore-dangle": 0,
+      "prefer-arrow-callback": 0,
+      "mocha/prefer-arrow-callback": 2,
+      "func-names": 0,
       "no-restricted-syntax": ["error", "ForInStatement", "LabeledStatement", "WithStatement"],
   }
   };
