@@ -1,31 +1,64 @@
 
 const { expect } = require('chai');
-// const sinon = require('sinon');
-const stampit = require('stampit');
+const sinon = require('sinon');
 
-const RecordingControllerStampFactory = require('./recording_controller.js');
+const RecordingControllerStamp = require('./recording_controller.js');
 
 
 describe('recording_controller', () => {
-  describe('Get device locations successfully', () => {
-    beforeEach(() => {
-      setUpTests();
-    });
+  describe('Save new recordings', () => {
+    it('should save recordings', async () => {
+      const mockRecordingsToBeSaved = [{
+        recordedObjectId: 1,
+        timestampRecorded: 'date1',
+        longitude: 10,
+        latitude: 10,
+        spaceIds: ['1', '2'],
+      },
+      {
+        recordedObjectId: 2,
+        timestampRecorded: 'date2',
+        longitude: 20,
+        latitude: 20,
+        spaceIds: ['3', '4'],
+      }];
 
-    it('should call accuware api with specified parameters', async () => {
-      await accuwareApi.getDeviceLocations();
+      const mockModelConstructorSpy = sinon.spy();
+      const saveRecordingSpy = sinon.spy();
+      const mockSavedRecordingsReturnedByModel = 'recordings';
 
-      expect(getStub.calledWithExactly(
-        `/sites/${locationsCallParams.siteId}/stations/`,
-        {
-          params: {
-            loc: locationsCallParams.includeLocations,
-            type: locationsCallParams.devicesToInclude,
-            lrrt: locationsCallParams.intervalPeriodInSeconds,
-            areas: locationsCallParams.areas,
-          },
-        },
-      )).to.equal(true);
+      class mockRecordingsModel {
+        constructor({
+          recordedObjectId,
+          timestampRecorded,
+          longitude,
+          latitude,
+          spaceIds,
+        }) {
+          this.modelData = {
+            recordedObjectId,
+            timestampRecorded,
+            longitude,
+            latitude,
+            spaceIds,
+          };
+          mockModelConstructorSpy(this.modelData);
+        }
+
+        save() {
+          saveRecordingSpy();
+          return new Promise((resolve) => {
+            resolve(mockSavedRecordingsReturnedByModel);
+          });
+        }
+      }
+
+      const recordingController = RecordingControllerStamp(mockRecordingsModel);
+      recordingController.saveRecordings(mockRecordingsToBeSaved);
+
+      expect(saveRecordingSpy.calledTwice);
+      expect(mockModelConstructorSpy.args[0][0]).to.deep.equal(mockRecordingsToBeSaved[0]);
+      expect(mockModelConstructorSpy.args[1][0]).to.deep.equal(mockRecordingsToBeSaved[1]);
     });
   });
 });
