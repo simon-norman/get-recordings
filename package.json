@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "mongoose": "^5.2.9",
     "stampit": "^4.1.2"
   }
 }

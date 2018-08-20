@@ -113,6 +113,14 @@ describe('recording_controller', () => {
         done();
       }, 100);
     });
+
+    it('should throw error if event emittable stamp not provided to stamp factory', function () {
+      const wrappedStampFactoryFunction = () => {
+        RecordingControllerStampFactory();
+      };
+
+      expect(wrappedStampFactoryFunction).throw();
+    });
   });
 });
 
