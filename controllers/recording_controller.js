@@ -16,7 +16,7 @@ module.exports = (EventEmittableStamp, Recording) => {
 
       saveSingleRecording(recording) {
         const recordingModel = new this.Recording({
-          recordedObjectId: recording.recordedObjectId,
+          objectId: recording.objectId,
           timestampRecorded: recording.timestampRecorded,
           longitude: recording.longitude,
           latitude: recording.latitude,
