@@ -1,31 +1,34 @@
 
 const stampit = require('stampit');
 
-module.exports = stampit({
-  init(Recording) {
-    this.Recording = Recording;
-  },
-
-  methods: {
-    saveRecordings(recordings) {
-      for (const recording of recordings) {
-        this.saveSingleRecording(recording);
-      }
+module.exports = (EventEmittableStamp) => {
+  const RecordingControllerStamp = stampit({
+    init(Recording) {
+      this.Recording = Recording;
     },
 
-    async saveSingleRecording(recording) {
-      const recordingModel = new this.Recording({
-        recordedObjectId: recording.recordedObjectId,
-        timestampRecorded: recording.timestampRecorded,
-        longitude: recording.longitude,
-        latitude: recording.latitude,
-        spaceIds: recording.spaceIds,
-      });
+    methods: {
+      saveRecordings(recordings) {
+        for (const recording of recordings) {
+          this.saveSingleRecording(recording);
+        }
+      },
 
-      recordingModel.save()
-        .catch((error) => {
-          console.log(error);
+      saveSingleRecording(recording) {
+        const recordingModel = new this.Recording({
+          recordedObjectId: recording.recordedObjectId,
+          timestampRecorded: recording.timestampRecorded,
+          longitude: recording.longitude,
+          latitude: recording.latitude,
+          spaceIds: recording.spaceIds,
         });
+
+        recordingModel.save()
+          .catch((error) => {
+            this.emit('saverecordingerror', error);
+          });
+      },
     },
-  },
-});
+  });
+  return EventEmittableStamp.compose(RecordingControllerStamp);
+};
