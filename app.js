@@ -20,7 +20,7 @@ const FunctionPollerStamp = diContainer.getDependency('FunctionPollerStamp');
 const functionPoller = FunctionPollerStamp();
 
 const functionPollerConfig = {
-  functionToPoll: accuwareApi.getDeviceLocations,
+  functionToPoll: accuwareApi.getDeviceLocations.bind(accuwareApi),
   functionResultEventName: 'devicelocations',
   pollingIntervalInMilSecs: 5000,
 };
@@ -33,10 +33,16 @@ const recordingController = RecordingControllerStamp();
 
 functionPoller.on(functionPollerConfig.functionResultEventName, (deviceLocations) => {
   console.log('new recording');
-  const convertedRecordings =
+  deviceLocations
+    .then(() => {
+      const convertedRecordings =
     accuwareRecordingsConverter.convertRecordingsForUsageAnalysis(deviceLocations, Date());
 
-  recordingController.saveRecordings(convertedRecordings);
+      recordingController.saveRecordings(convertedRecordings);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 });
 
 functionPoller.pollFunction(functionPollerConfig);
