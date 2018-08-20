@@ -31,12 +31,11 @@ const accuwareRecordingsConverter = AccuwareRecordingsConverterStamp();
 const RecordingControllerStamp = diContainer.getDependency('RecordingControllerStamp');
 const recordingController = RecordingControllerStamp();
 
-functionPoller.on(functionPollerConfig.functionResultEventName, (deviceLocations) => {
-  console.log('new recording');
-  deviceLocations
-    .then(() => {
-      const convertedRecordings =
-    accuwareRecordingsConverter.convertRecordingsForUsageAnalysis(deviceLocations, Date());
+functionPoller.on(functionPollerConfig.functionResultEventName, (accuwareApiCallPromise) => {
+  accuwareApiCallPromise
+    .then((accuwareApiResponse) => {
+      const convertedRecordings = accuwareRecordingsConverter
+        .convertRecordingsForUsageAnalysis(accuwareApiResponse.data, Date());
 
       recordingController.saveRecordings(convertedRecordings);
     })

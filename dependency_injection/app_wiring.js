@@ -9,28 +9,34 @@ const AccuwareRecordingsConverterStampFactory = require('../services/accuware_re
 const Recording = require('../models/recording');
 const RecordingControllerStampFactory = require('../controllers/recording_controller');
 
-const wireUpApp = () => {
-  const diContainer = DiContainerStamp();
+let diContainer;
 
+const registerAccuwareApi = () => {
   const config = getConfigForEnvironment(process.env.NODE_ENV);
-
   const apiConfig = config.accuwareApi.baseConfig;
-
   diContainer.registerDependency('apiConfig', apiConfig);
 
   diContainer.registerDependencyFromFactory('BaseApiStamp', BaseApiStampFactory);
-
   diContainer.registerDependencyFromFactory('AccuwareApiStamp', AccuwareApiStampFactory);
+};
 
-  diContainer.registerDependency('EventEmittableStamp', EventEmittableStamp);
-
+const registerFunctionPoller = () => {
   diContainer.registerDependencyFromFactory('FunctionPollerStamp', FunctionPollerStampFactory);
+};
 
+const registerSaveRecordingComponents = () => {
   diContainer.registerDependencyFromFactory('AccuwareRecordingsConverterStamp', AccuwareRecordingsConverterStampFactory);
-
   diContainer.registerDependency('Recording', Recording);
-
   diContainer.registerDependencyFromFactory('RecordingControllerStamp', RecordingControllerStampFactory);
+};
+
+const wireUpApp = () => {
+  diContainer = DiContainerStamp();
+
+  registerAccuwareApi();
+  diContainer.registerDependency('EventEmittableStamp', EventEmittableStamp);
+  registerFunctionPoller();
+  registerSaveRecordingComponents();
 
   return diContainer;
 };
