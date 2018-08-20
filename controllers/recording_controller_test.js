@@ -16,14 +16,14 @@ describe('recording_controller', () => {
 
   const setMockRecordingsToBeSaved = () => {
     mockRecordingsToBeSaved = [{
-      recordedObjectId: 1,
+      objectId: 1,
       timestampRecorded: 'date1',
       longitude: 10,
       latitude: 10,
       spaceIds: ['1', '2'],
     },
     {
-      recordedObjectId: 2,
+      objectId: 2,
       timestampRecorded: 'date2',
       longitude: 20,
       latitude: 20,
@@ -37,14 +37,14 @@ describe('recording_controller', () => {
 
     MockRecordingsModel = class {
       constructor({
-        recordedObjectId,
+        objectId,
         timestampRecorded,
         longitude,
         latitude,
         spaceIds,
       }) {
         this.modelData = {
-          recordedObjectId,
+          objectId,
           timestampRecorded,
           longitude,
           latitude,

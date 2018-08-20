@@ -15,7 +15,7 @@ const config = {
   development: {
     accuwareApi: {
       baseConfig: configSharedAcrossEnvironments.accuwareApiConfig,
-      developmentSiteId: 1001,
+      siteId: 1001,
     },
     trackingDatabase: {
       uri: 'mongodb://localhost:27017/tracking_app_dev',
@@ -25,6 +25,7 @@ const config = {
   test: {
     accuwareApi: {
       baseConfig: configSharedAcrossEnvironments.accuwareApiConfig,
+      siteId: process.env.ACCUWARE_SITE_ID,
     },
     trackingDatabase: {
       uri: process.env.TRACKING_DATABASE,
@@ -34,6 +35,7 @@ const config = {
   qa: {
     accuwareApi: {
       baseConfig: configSharedAcrossEnvironments.accuwareApiConfig,
+      siteId: process.env.ACCUWARE_SITE_ID,
     },
     trackingDatabase: {
       uri: process.env.TRACKING_DATABASE,
@@ -43,6 +45,7 @@ const config = {
   production: {
     accuwareApi: {
       baseConfig: configSharedAcrossEnvironments.accuwareApiConfig,
+      siteId: process.env.ACCUWARE_SITE_ID,
     },
     trackingDatabase: {
       uri: process.env.TRACKING_DATABASE,

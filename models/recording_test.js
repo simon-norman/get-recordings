@@ -24,7 +24,7 @@ describe('recording_controller', () => {
     await ensureRecordingCollectionEmpty();
 
     mockRecording = {
-      recordedObjectId: '2',
+      objectId: '2',
       timestampRecorded: 'date2',
       longitude: 20,
       latitude: 20,
@@ -40,7 +40,7 @@ describe('recording_controller', () => {
   it('should save recording when validation is successful', async function () {
     const recording = new Recording(mockRecording);
     const savedRecording = await recording.save();
-    expect(savedRecording.recordedObjectId).to.equal(mockRecording.recordedObjectId);
+    expect(savedRecording.objectId).to.equal(mockRecording.objectId);
     expect(savedRecording.timestampRecorded).to.equal(mockRecording.timestampRecorded);
     expect(savedRecording.longitude).to.equal(mockRecording.longitude);
     expect(savedRecording.latitude).to.equal(mockRecording.latitude);
@@ -62,8 +62,8 @@ describe('recording_controller', () => {
     expect(errorFound).to.equal(true);
   });
 
-  it('should reject save if recordedObjectId not provided', async function () {
-    mockRecording.recordedObjectId = '';
+  it('should reject save if objectId not provided', async function () {
+    mockRecording.objectId = '';
     const recording = new Recording(mockRecording);
 
     let errorFound = false;

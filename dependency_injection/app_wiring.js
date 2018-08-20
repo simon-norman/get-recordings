@@ -5,6 +5,7 @@ const AccuwareApiStampFactory = require('../services/accuware_api');
 const BaseApiStampFactory = require('../services/base_api');
 const EventEmittableStamp = require('../helpers/event_emittable_stamp');
 const FunctionPollerStampFactory = require('../services/function_poller');
+const AccuwareRecordingsConverterStampFactory = require('../services/accuware_recordings_converter');
 const Recording = require('../models/recording');
 const RecordingControllerStampFactory = require('../controllers/recording_controller');
 
@@ -25,9 +26,13 @@ const wireUpApp = () => {
 
   diContainer.registerDependencyFromFactory('FunctionPollerStamp', FunctionPollerStampFactory);
 
+  diContainer.registerDependencyFromFactory('AccuwareRecordingsConverterStamp', AccuwareRecordingsConverterStampFactory);
+
   diContainer.registerDependency('Recording', Recording);
 
   diContainer.registerDependencyFromFactory('RecordingControllerStamp', RecordingControllerStampFactory);
+
+  return diContainer;
 };
 
 module.exports = { wireUpApp };
