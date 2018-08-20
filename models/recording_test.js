@@ -15,18 +15,14 @@ describe('recording_controller', () => {
     }
   };
 
-  before((done) => {
+  before(async () => {
     config = getConfigForEnvironment(process.env.NODE_ENV);
-    mongoose.connect(config.trackingDatabase.uri, { useNewUrlParser: true })
-      .then(() => {
-        done();
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    await mongoose.connect(config.trackingDatabase.uri, { useNewUrlParser: true });
   });
 
   beforeEach(async () => {
+    await ensureRecordingCollectionEmpty();
+
     mockRecording = {
       recordedObjectId: '2',
       timestampRecorded: 'date2',
@@ -34,8 +30,6 @@ describe('recording_controller', () => {
       latitude: 20,
       spaceIds: ['3', '4'],
     };
-
-    await ensureRecordingCollectionEmpty();
   });
 
   after(async () => {
@@ -56,7 +50,6 @@ describe('recording_controller', () => {
 
   it('should reject save if timestamp not provided', async function () {
     mockRecording.timestampRecorded = '';
-
     const recording = new Recording(mockRecording);
 
     let errorFound = false;
@@ -69,7 +62,18 @@ describe('recording_controller', () => {
     expect(errorFound).to.equal(true);
   });
 
-  it('should reject save if recordedObjectId not provided', function () {
+  it('should reject save if recordedObjectId not provided', async function () {
+    mockRecording.recordedObjectId = '';
+    const recording = new Recording(mockRecording);
+
+    let errorFound = false;
+    try {
+      await recording.save();
+    } catch (error) {
+      errorFound = true;
+    }
+
+    expect(errorFound).to.equal(true);
   });
 });
 

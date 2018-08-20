@@ -1,9 +1,9 @@
 
 const stampit = require('stampit');
 
-module.exports = (EventEmittableStamp) => {
+module.exports = (EventEmittableStamp, Recording) => {
   const RecordingControllerStamp = stampit({
-    init(Recording) {
+    init() {
       this.Recording = Recording;
     },
 

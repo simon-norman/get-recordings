@@ -21,7 +21,7 @@ describe('function_poller', function () {
     functionPollerConfig = {
       functionToPoll: stubbedFunction,
       functionResultEventName: 'resultEventName',
-      pollingIntervalInMilSecs: 200,
+      pollingIntervalInMilSecs: 100,
     };
 
     FunctionPollerStamp = FunctionPollerStampFactory(EventEmittableStamp);
@@ -30,7 +30,6 @@ describe('function_poller', function () {
 
   describe('Register function with poller and receive events with result of function', function () {
     it('should receive events with the result of the function every X seconds, where X is the polling interval specified', function (done) {
-      this.timeout(700);
       const resultsFromFunction = [];
       functionPoller.on(functionPollerConfig.functionResultEventName, (functionResult) => {
         resultsFromFunction.push(functionResult);
@@ -43,7 +42,7 @@ describe('function_poller', function () {
         expect(resultsFromFunction.length).to.equal(2);
         expect(resultsFromFunction[0]).to.equal(dataReturnedByFunction);
         done();
-      }, 500);
+      }, 250);
     });
   });
 
@@ -75,15 +74,18 @@ describe('function_poller', function () {
       expect(wrappedFunctionPoller).throw(TypeError);
     });
 
-    it('should emit error event with details of the error if error is thrown when polling function', function (done) {
-      this.timeout(500);
+    it('should emit error event with details of the error if error is thrown when polling function', function () {
       stubbedFunction.throws();
-      functionPoller.on('error', (error) => {
-        expect(error).to.exist;
-        done();
-      });
 
+      const functionPollerErrors = [];
+      functionPoller.on('error', (error) => {
+        functionPollerErrors.push(error);
+      });
       functionPoller.pollFunction(functionPollerConfig);
+
+      setTimeout(() => {
+        expect(functionPollerErrors.length).to.equal(2);
+      }, 250);
     });
   });
 });

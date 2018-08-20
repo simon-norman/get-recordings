@@ -66,13 +66,14 @@ describe('recording_controller', () => {
     setMockRecordingsToBeSaved();
 
     setUpMockRecordingsModelWithSpies();
-
-    RecordingControllerStamp = RecordingControllerStampFactory(EventEmittableStamp);
   });
 
   describe('Save new recordings', () => {
     beforeEach(() => {
-      recordingController = RecordingControllerStamp(MockRecordingsModel);
+      RecordingControllerStamp =
+        RecordingControllerStampFactory(EventEmittableStamp, MockRecordingsModel);
+
+      recordingController = RecordingControllerStamp();
     });
 
     it('should save recordings', async function () {
@@ -97,7 +98,10 @@ describe('recording_controller', () => {
         }
       };
 
-      recordingController = RecordingControllerStamp(MockRecordingsModelThrowsError);
+      RecordingControllerStamp =
+        RecordingControllerStampFactory(EventEmittableStamp, MockRecordingsModelThrowsError);
+
+      recordingController = RecordingControllerStamp();
     });
 
     it('should pass error event if error encountered when saving recordings', function (done) {
