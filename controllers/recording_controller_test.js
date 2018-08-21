@@ -68,7 +68,7 @@ describe('recording_controller', () => {
     setUpMockRecordingsModelWithSpies();
   });
 
-  describe('Save new recordings', () => {
+  describe('Save recording', () => {
     beforeEach(() => {
       RecordingControllerStamp =
         RecordingControllerStampFactory(EventEmittableStamp, MockRecordingsModel);
@@ -76,8 +76,8 @@ describe('recording_controller', () => {
       recordingController = RecordingControllerStamp();
     });
 
-    it('should save recordings', async function () {
-      recordingController.saveRecordings(mockRecordingsToBeSaved);
+    it('should save recording', async function () {
+      recordingController.saveSingleRecording(mockRecordingsToBeSaved);
 
       expect(saveRecordingSpy.calledTwice);
       expect(mockModelConstructorSpy.args[0][0]).to.deep.equal(mockRecordingsToBeSaved[0]);

@@ -1,13 +1,14 @@
 const stampit = require('stampit');
 
-module.exports = InvalidAccuwareRecordingError => stampit({
+module.exports = (InvalidLocationInRecordingError, InvalidTimestampInRecordingError) => stampit({
   props: {
-    InvalidAccuwareRecordingError,
+    InvalidLocationInRecordingError,
+    InvalidTimestampInRecordingError,
   },
 
   methods: {
     convertRecordingForUsageAnalysis(accuwareRecording, timestampRecorded) {
-      this.checkRecordingValid(accuwareRecording);
+      this.checkRecordingValid(accuwareRecording, timestampRecorded);
       return {
         objectId: accuwareRecording.mac,
         longitude: accuwareRecording.loc.lng,
@@ -17,9 +18,12 @@ module.exports = InvalidAccuwareRecordingError => stampit({
       };
     },
 
-    checkRecordingValid(accuwareRecording) {
+    checkRecordingValid(accuwareRecording, timestampRecorded) {
       if (!accuwareRecording.loc || !accuwareRecording.loc.lng || !accuwareRecording.loc.lat) {
-        throw new this.InvalidAccuwareRecordingError('Recording location not provided');
+        throw new this.InvalidLocationInRecordingError('Recording location not provided');
+      }
+      if (!timestampRecorded || isNaN(timestampRecorded)) {
+        throw new this.InvalidTimestampInRecordingError('Invalid timestamp provided to recording');
       }
       return true;
     },

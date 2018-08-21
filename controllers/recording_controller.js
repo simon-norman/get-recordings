@@ -8,12 +8,6 @@ module.exports = (EventEmittableStamp, Recording) => {
     },
 
     methods: {
-      saveRecordings(recordings) {
-        for (const recording of recordings) {
-          this.saveSingleRecording(recording);
-        }
-      },
-
       saveSingleRecording(recording) {
         const recordingModel = new this.Recording({
           objectId: recording.objectId,

@@ -3,68 +3,105 @@ const { wireUpApp } = require('./dependency_injection/app_wiring');
 const { getConfigForEnvironment } = require('./config/config.js');
 const mongoose = require('mongoose');
 
-const diContainer = wireUpApp();
+let config;
+let diContainer;
+let accuwareApi;
+let functionPollerConfig;
+let functionPoller;
+let accuwareRecordingConverter;
+let recordingController;
 
-const config = getConfigForEnvironment(process.env.NODE_ENV);
-const connectToDatabase = async () => {
+const connectToDatabase = () =>
+  mongoose.connect(config.trackingDatabase.uri, { useNewUrlParser: true });
+
+const setUpAccuwareApi = () => {
+  const accuwareApiConfig = config.accuwareApi.getDeviceLocations;
+  const AccuwareApiStamp = diContainer.getDependency('AccuwareApiStamp');
+  accuwareApi = AccuwareApiStamp(accuwareApiConfig);
+};
+
+const getComponentsToSaveRecordings = () => {
+  accuwareRecordingConverter = diContainer.getDependency('accuwareRecordingConverter');
+  recordingController = diContainer.getDependency('recordingController');
+};
+
+
+const saveSingleRecordingInUsageAnalysisFormat = (accuwareRecording, timestampRecorded) => {
+  const convertedRecording = accuwareRecordingConverter
+    .convertRecordingForUsageAnalysis(accuwareRecording, timestampRecorded);
+
+  recordingController.saveSingleRecording(convertedRecording);
+};
+
+const saveRecordingsInUsageAnalysisFormat = (accuwareRecordings) => {
+  const timestampRecorded = Date.now();
+  const InvalidLocationInRecordingError = diContainer.getDependency('InvalidAccuwareRecordingError');
+  for (const accuwareRecording of accuwareRecordings) {
+    try {
+      saveSingleRecordingInUsageAnalysisFormat(accuwareRecording, timestampRecorded);
+    } catch (error) {
+      if (error instanceof InvalidLocationInRecordingError) {
+        continue;
+      } else {
+        console.log(error);
+        process.exit();
+      }
+    }
+  }
+};
+
+const handleApiResponseError = (error) => {
+  if (error.response.status === 401) {
+    console.log(error);
+    process.exit();
+  }
+};
+
+const handleApiResponse = (accuwareApiCallPromise) => {
+  accuwareApiCallPromise
+    .then((accuwareApiResponse) => {
+      saveRecordingsInUsageAnalysisFormat(accuwareApiResponse.data);
+    })
+    .catch((error) => {
+      handleApiResponseError(error);
+    });
+};
+
+const startFunctionPoller = () => {
+  functionPoller = diContainer.getDependency('functionPoller');
+  functionPoller.on(functionPollerConfig.functionResultEventName, (accuwareApiCallPromise) => {
+    handleApiResponse(accuwareApiCallPromise);
+  });
+
+  functionPoller.pollFunction(functionPollerConfig);
+};
+
+
+const startTrackApiCalls = () => {
+  functionPollerConfig = {
+    functionToPoll: accuwareApi.getDeviceLocations.bind(accuwareApi),
+    functionResultEventName: 'devicelocations',
+    pollingIntervalInMilSecs: 5000,
+  };
+
+  startFunctionPoller();
+};
+
+const startApp = async () => {
+  config = getConfigForEnvironment(process.env.NODE_ENV);
+  diContainer = wireUpApp();
+
   try {
-    await mongoose.connect(config.trackingDatabase.uri, { useNewUrlParser: true });
+    await connectToDatabase();
   } catch (error) {
     console.log(error);
   }
-};
-connectToDatabase();
 
+  getComponentsToSaveRecordings();
 
-const accuwareApiConfig = {
-  siteId: config.accuwareApi.siteId,
-  intervalPeriodInSeconds: 5,
-  includeLocations: 'yes',
-  devicesToInclude: 'all',
-  areas: 'yes',
+  setUpAccuwareApi();
+
+  startTrackApiCalls();
 };
 
-const AccuwareApiStamp = diContainer.getDependency('AccuwareApiStamp');
-const accuwareApi = AccuwareApiStamp(accuwareApiConfig);
-
-const FunctionPollerStamp = diContainer.getDependency('FunctionPollerStamp');
-const functionPoller = FunctionPollerStamp();
-
-const functionPollerConfig = {
-  functionToPoll: accuwareApi.getDeviceLocations.bind(accuwareApi),
-  functionResultEventName: 'devicelocations',
-  pollingIntervalInMilSecs: 5000,
-};
-
-const AccuwareRecordingConverterStamp = diContainer.getDependency('AccuwareRecordingConverterStamp');
-const accuwareRecordingConverter = AccuwareRecordingConverterStamp();
-
-const RecordingControllerStamp = diContainer.getDependency('RecordingControllerStamp');
-const recordingController = RecordingControllerStamp();
-
-functionPoller.on(functionPollerConfig.functionResultEventName, (accuwareApiCallPromise) => {
-  accuwareApiCallPromise
-    .then((accuwareApiResponse) => {
-      const accuwareRecordings = accuwareApiResponse.data;
-
-      const InvalidAccuwareRecordingError = diContainer.getDependency('InvalidAccuwareRecordingError');
-      for (const accuwareRecording of accuwareRecordings) {
-        try {
-          const convertedRecording = accuwareRecordingConverter
-            .convertRecordingForUsageAnalysis(accuwareRecording, Date());
-          recordingController.saveSingleRecording(convertedRecording);
-        } catch (error) {
-          if (error instanceof InvalidAccuwareRecordingError) {
-            continue;
-          } else {
-            console.log(error);
-          }
-        }
-      }
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-});
-
-functionPoller.pollFunction(functionPollerConfig);
+startApp();

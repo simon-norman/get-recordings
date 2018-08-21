@@ -5,7 +5,7 @@ const configSharedAcrossEnvironments = {
     headers: {
       authorization: {
         username: process.env.ACCUWARE_API_USERNAME,
-        password: process.env.ACCUWARE_API_PASSWORD,
+        password: 'stuff',
       },
     },
   },
@@ -15,7 +15,13 @@ const config = {
   development: {
     accuwareApi: {
       baseConfig: configSharedAcrossEnvironments.accuwareApiConfig,
-      siteId: 1001,
+      getDeviceLocations: {
+        siteId: 1001,
+        intervalPeriodInSeconds: 5,
+        includeLocations: 'yes',
+        devicesToInclude: 'all',
+        areas: 'yes',
+      },
     },
     trackingDatabase: {
       uri: 'mongodb://localhost:27017/tracking_app_dev',
@@ -25,7 +31,13 @@ const config = {
   test: {
     accuwareApi: {
       baseConfig: configSharedAcrossEnvironments.accuwareApiConfig,
-      siteId: process.env.ACCUWARE_SITE_ID,
+      getDeviceLocations: {
+        siteId: process.env.ACCUWARE_SITE_ID,
+        intervalPeriodInSeconds: 5,
+        includeLocations: 'yes',
+        devicesToInclude: 'all',
+        areas: 'yes',
+      },
     },
     trackingDatabase: {
       uri: process.env.TRACKING_DATABASE,
@@ -35,7 +47,13 @@ const config = {
   qa: {
     accuwareApi: {
       baseConfig: configSharedAcrossEnvironments.accuwareApiConfig,
-      siteId: process.env.ACCUWARE_SITE_ID,
+      getDeviceLocations: {
+        siteId: process.env.ACCUWARE_SITE_ID,
+        intervalPeriodInSeconds: 5,
+        includeLocations: 'yes',
+        devicesToInclude: 'all',
+        areas: 'yes',
+      },
     },
     trackingDatabase: {
       uri: process.env.TRACKING_DATABASE,
@@ -45,7 +63,13 @@ const config = {
   production: {
     accuwareApi: {
       baseConfig: configSharedAcrossEnvironments.accuwareApiConfig,
-      siteId: process.env.ACCUWARE_SITE_ID,
+      getDeviceLocations: {
+        siteId: process.env.ACCUWARE_SITE_ID,
+        intervalPeriodInSeconds: 5,
+        includeLocations: 'yes',
+        devicesToInclude: 'all',
+        areas: 'yes',
+      },
     },
     trackingDatabase: {
       uri: process.env.TRACKING_DATABASE,
