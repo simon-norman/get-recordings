@@ -1,9 +1,12 @@
 
 const parseFunctionArgs = require('parse-fn-args');
 const stampit = require('stampit');
-const DependencyNotFoundError = require('../helpers/error_handling/errors/DependencyNotFoundError.js');
 
-module.exports = stampit({
+module.exports = DependencyNotFoundError => stampit({
+  props: {
+    DependencyNotFoundError,
+  },
+
   init() {
     this.dependencies = {};
   },

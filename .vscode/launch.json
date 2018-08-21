@@ -96,7 +96,7 @@
     {
         "type": "node",
         "request": "launch",
-        "name": "accuware recordings converter tests",
+        "name": "accuware recording converter tests",
         "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
         "args": [
             "-u",
@@ -104,7 +104,7 @@
             "--timeout",
             "999999",
             "--colors",
-            "./{,!(node_modules)/**/}*accuware_recordings_converter_test.js"
+            "./{,!(node_modules)/**/}*accuware_recording_converter_test.js"
         ],
         "internalConsoleOptions": "openOnSessionStart"
     },

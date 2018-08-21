@@ -1,11 +1,13 @@
 
+const DependencyNotFoundError = require('../helpers/error_handling/errors/DependencyNotFoundError.js');
+const DiContainerStampFactory = require('./di_container');
 const { getConfigForEnvironment } = require('../config/config.js');
-const DiContainerStamp = require('./di_container');
 const AccuwareApiStampFactory = require('../services/accuware_api');
 const BaseApiStampFactory = require('../services/base_api');
 const EventEmittableStamp = require('../helpers/event_emittable_stamp');
 const FunctionPollerStampFactory = require('../services/function_poller');
-const AccuwareRecordingsConverterStampFactory = require('../services/accuware_recordings_converter');
+const InvalidAccuwareRecordingError = require('../helpers/error_handling/errors/InvalidAccuwareRecordingError');
+const AccuwareRecordingConverterStampFactory = require('../services/accuware_recording_converter');
 const Recording = require('../models/recording');
 const RecordingControllerStampFactory = require('../controllers/recording_controller');
 
@@ -25,12 +27,15 @@ const registerFunctionPoller = () => {
 };
 
 const registerSaveRecordingComponents = () => {
-  diContainer.registerDependencyFromFactory('AccuwareRecordingsConverterStamp', AccuwareRecordingsConverterStampFactory);
+  diContainer.registerDependency('InvalidAccuwareRecordingError', InvalidAccuwareRecordingError);
+  diContainer.registerDependencyFromFactory('AccuwareRecordingConverterStamp', AccuwareRecordingConverterStampFactory);
+
   diContainer.registerDependency('Recording', Recording);
   diContainer.registerDependencyFromFactory('RecordingControllerStamp', RecordingControllerStampFactory);
 };
 
 const wireUpApp = () => {
+  const DiContainerStamp = DiContainerStampFactory(DependencyNotFoundError);
   diContainer = DiContainerStamp();
 
   registerAccuwareApi();

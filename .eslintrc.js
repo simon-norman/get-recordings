@@ -19,6 +19,7 @@ module.exports = {
       "no-unused-expressions": 0,
       "no-underscore-dangle": 0,
       "prefer-arrow-callback": 0,
+      "no-continue": 0,
       "class-methods-use-this": 0,
       "mocha/prefer-arrow-callback": 2,
       "func-names": 0,

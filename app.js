@@ -1,10 +1,21 @@
 
 const { wireUpApp } = require('./dependency_injection/app_wiring');
 const { getConfigForEnvironment } = require('./config/config.js');
+const mongoose = require('mongoose');
 
 const diContainer = wireUpApp();
 
 const config = getConfigForEnvironment(process.env.NODE_ENV);
+const connectToDatabase = async () => {
+  try {
+    await mongoose.connect(config.trackingDatabase.uri, { useNewUrlParser: true });
+  } catch (error) {
+    console.log(error);
+  }
+};
+connectToDatabase();
+
+
 const accuwareApiConfig = {
   siteId: config.accuwareApi.siteId,
   intervalPeriodInSeconds: 5,
@@ -25,8 +36,8 @@ const functionPollerConfig = {
   pollingIntervalInMilSecs: 5000,
 };
 
-const AccuwareRecordingsConverterStamp = diContainer.getDependency('AccuwareRecordingsConverterStamp');
-const accuwareRecordingsConverter = AccuwareRecordingsConverterStamp();
+const AccuwareRecordingConverterStamp = diContainer.getDependency('AccuwareRecordingConverterStamp');
+const accuwareRecordingConverter = AccuwareRecordingConverterStamp();
 
 const RecordingControllerStamp = diContainer.getDependency('RecordingControllerStamp');
 const recordingController = RecordingControllerStamp();
@@ -34,10 +45,22 @@ const recordingController = RecordingControllerStamp();
 functionPoller.on(functionPollerConfig.functionResultEventName, (accuwareApiCallPromise) => {
   accuwareApiCallPromise
     .then((accuwareApiResponse) => {
-      const convertedRecordings = accuwareRecordingsConverter
-        .convertRecordingsForUsageAnalysis(accuwareApiResponse.data, Date());
+      const accuwareRecordings = accuwareApiResponse.data;
 
-      recordingController.saveRecordings(convertedRecordings);
+      const InvalidAccuwareRecordingError = diContainer.getDependency('InvalidAccuwareRecordingError');
+      for (const accuwareRecording of accuwareRecordings) {
+        try {
+          const convertedRecording = accuwareRecordingConverter
+            .convertRecordingForUsageAnalysis(accuwareRecording, Date());
+          recordingController.saveSingleRecording(convertedRecording);
+        } catch (error) {
+          if (error instanceof InvalidAccuwareRecordingError) {
+            continue;
+          } else {
+            console.log(error);
+          }
+        }
+      }
     })
     .catch((error) => {
       console.log(error);

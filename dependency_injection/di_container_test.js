@@ -1,7 +1,7 @@
 
 const { expect } = require('chai');
 
-const DiContainerStamp = require('./di_container.js');
+const DiContainerStampFactory = require('./di_container.js');
 const { diMockDependency1 } = require('./di_mock_dependency_1.js');
 const diMockDependency2 = require('./di_mock_dependency_2.js');
 const diMockDependency3 = require('./di_mock_dependency_3.js');
@@ -9,7 +9,12 @@ const DependencyNotFoundError = require('../helpers/error_handling/errors/Depend
 
 
 describe('di_container', () => {
+  let DiContainerStamp;
   let diContainer;
+
+  before(() => {
+    DiContainerStamp = DiContainerStampFactory(DependencyNotFoundError);
+  });
 
   beforeEach(() => {
     diContainer = DiContainerStamp();
