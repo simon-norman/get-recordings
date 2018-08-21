@@ -6,7 +6,7 @@ module.exports = (EventEmittableStamp) => {
     methods: {
       pollFunction(config) {
         if (this.isPollConfigValid(config)) {
-          setInterval(() => {
+          this.intervalId = setInterval(() => {
             try {
               const result = config.functionToPoll();
               this.emit(config.functionResultEventName, result);

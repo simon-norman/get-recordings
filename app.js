@@ -35,7 +35,7 @@ const saveSingleRecordingInUsageAnalysisFormat = (accuwareRecording, timestampRe
 
 const saveRecordingsInUsageAnalysisFormat = (accuwareRecordings) => {
   const timestampRecorded = Date.now();
-  const InvalidLocationInRecordingError = diContainer.getDependency('InvalidAccuwareRecordingError');
+  const InvalidLocationInRecordingError = diContainer.getDependency('InvalidLocationInRecordingError');
   for (const accuwareRecording of accuwareRecordings) {
     try {
       saveSingleRecordingInUsageAnalysisFormat(accuwareRecording, timestampRecorded);
@@ -51,9 +51,12 @@ const saveRecordingsInUsageAnalysisFormat = (accuwareRecordings) => {
 };
 
 const handleApiResponseError = (error) => {
-  if (error.response.status === 401) {
+  const responseCode = error.response.status;
+  if (responseCode === 401 || responseCode === 400 || responseCode === 403) {
     console.log(error);
     process.exit();
+  } else {
+    console.log(error);
   }
 };
 

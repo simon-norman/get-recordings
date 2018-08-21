@@ -5,7 +5,7 @@ const configSharedAcrossEnvironments = {
     headers: {
       authorization: {
         username: process.env.ACCUWARE_API_USERNAME,
-        password: 'stuff',
+        password: process.env.ACCUWARE_API_PASSWORD,
       },
     },
   },
