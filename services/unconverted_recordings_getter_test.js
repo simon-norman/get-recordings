@@ -40,12 +40,10 @@ describe('unconverted_recordings_getter', function () {
         stubbedGetRecordingsFunction,
         mockRecordingsResponseEvent,
       );
-
-      expect(stubbedGetRecordingsFunction.callCount).to.equal(1);
-
       mockGetRecordingsObject.emit(mockRecordingsResponseEvent, mockRecordingsResponsePromise);
 
       setTimeout(() => {
+        expect(stubbedGetRecordingsFunction.callCount).to.equal(1);
         expect(stubbedSaveRecordingsInUsageAnalysisFormat.callCount).to.equal(1);
         expect(stubbedSaveRecordingsInUsageAnalysisFormat.firstCall.calledWith)
           .to.equal(mockRecordingsResponseData.data);

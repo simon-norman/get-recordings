@@ -3,21 +3,26 @@ const stampit = require('stampit');
 
 module.exports = (EventEmittableStamp) => {
   const FunctionPollerWithoutEmitterStamp = stampit({
+    init(config) {
+      this.checkPollConfigValid(config);
+      this.functionResultEventName = config.functionResultEventName;
+      this.functionToPoll = config.functionToPoll;
+      this.pollingIntervalInMilSecs = config.pollingIntervalInMilSecs;
+    },
+
     methods: {
-      pollFunction(config) {
-        if (this.isPollConfigValid(config)) {
-          this.intervalId = setInterval(() => {
-            try {
-              const result = config.functionToPoll();
-              this.emit(config.functionResultEventName, result);
-            } catch (error) {
-              this.emit('error', error);
-            }
-          }, config.pollingIntervalInMilSecs);
-        }
+      pollFunction() {
+        this.intervalId = setInterval(() => {
+          try {
+            const result = this.functionToPoll();
+            this.emit(this.functionResultEventName, result);
+          } catch (error) {
+            this.emit('error', error);
+          }
+        }, this.pollingIntervalInMilSecs);
       },
 
-      isPollConfigValid(config) {
+      checkPollConfigValid(config) {
         if (!config.pollingIntervalInMilSecs > 0) {
           throw new TypeError('Polling interval must be a number greater than 0');
         } else if (!config.functionResultEventName) {

@@ -13,6 +13,10 @@ describe('function_poller', function () {
   let FunctionPollerStamp;
   let functionPoller;
 
+  const wrappedFunctionPollerInstantiate = () => {
+    functionPoller = FunctionPollerStamp(functionPollerConfig);
+  };
+
   beforeEach(() => {
     dataReturnedByFunction = 'data';
     stubbedFunction = sinon.stub();
@@ -25,17 +29,17 @@ describe('function_poller', function () {
     };
 
     FunctionPollerStamp = FunctionPollerStampFactory(EventEmittableStamp);
-    functionPoller = FunctionPollerStamp();
+    functionPoller = FunctionPollerStamp(functionPollerConfig);
   });
 
-  describe('Register function with poller and receive events with result of function', function () {
-    it('should receive events with the result of the function every X seconds, where X is the polling interval specified', function (done) {
+  describe('Register function with poller, which sends events with result of function', function () {
+    it('should send events with the result of the function every X seconds, where X is the polling interval specified', function (done) {
       const resultsFromFunction = [];
       functionPoller.on(functionPollerConfig.functionResultEventName, (functionResult) => {
         resultsFromFunction.push(functionResult);
       });
 
-      functionPoller.pollFunction(functionPollerConfig);
+      functionPoller.pollFunction();
 
 
       setTimeout(() => {
@@ -49,29 +53,20 @@ describe('function_poller', function () {
   describe('Throw errors when config values not specified', function () {
     it('should throw typeerror if event name for function result not specified', function () {
       functionPollerConfig.functionResultEventName = '';
-      const wrappedFunctionPoller = () => {
-        functionPoller.pollFunction(functionPollerConfig);
-      };
 
-      expect(wrappedFunctionPoller).throw(TypeError);
+      expect(wrappedFunctionPollerInstantiate).throw(TypeError);
     });
 
     it('should throw typeerror if no function specified to poll', function () {
       functionPollerConfig.functionToPoll = '';
-      const wrappedFunctionPoller = () => {
-        functionPoller.pollFunction(functionPollerConfig);
-      };
 
-      expect(wrappedFunctionPoller).throw(TypeError);
+      expect(wrappedFunctionPollerInstantiate).throw(TypeError);
     });
 
     it('should throw typeerror if polling interval not specified', function () {
       functionPollerConfig.pollingIntervalInMilSecs = '';
-      const wrappedFunctionPoller = () => {
-        functionPoller.pollFunction(functionPollerConfig);
-      };
 
-      expect(wrappedFunctionPoller).throw(TypeError);
+      expect(wrappedFunctionPollerInstantiate).throw(TypeError);
     });
 
     it('should emit error event with details of the error if error is thrown when polling function', function () {
@@ -81,7 +76,7 @@ describe('function_poller', function () {
       functionPoller.on('error', (error) => {
         functionPollerErrors.push(error);
       });
-      functionPoller.pollFunction(functionPollerConfig);
+      functionPoller.pollFunction();
 
       setTimeout(() => {
         expect(functionPollerErrors.length).to.equal(2);

@@ -31,8 +31,6 @@ const registerAccuwareApi = () => {
 
 const registerFunctionPoller = () => {
   diContainer.registerDependencyFromFactory('FunctionPollerStamp', FunctionPollerStampFactory);
-  const FunctionPollerStamp = diContainer.getDependency('FunctionPollerStamp');
-  diContainer.registerDependency('functionPoller', FunctionPollerStamp());
 };
 
 const registerRecordingConverter = () => {

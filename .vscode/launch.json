@@ -36,7 +36,7 @@
     {
         "type": "node",
         "request": "launch",
-        "name": "Accuware api tests",
+        "name": "Monitored sites register test",
         "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
         "args": [
             "-u",
@@ -44,7 +44,7 @@
             "--timeout",
             "999999",
             "--colors",
-            "./{,!(node_modules)/**/}*accuware_api_test.js"
+            "./{,!(node_modules)/**/}*monitored_sites_register_test.js"
         ],
         "internalConsoleOptions": "openOnSessionStart"
     },
@@ -60,6 +60,21 @@
             "999999",
             "--colors",
             "./{,!(node_modules)/**/}*base_api_test.js"
+        ],
+        "internalConsoleOptions": "openOnSessionStart"
+    },
+    {
+        "type": "node",
+        "request": "launch",
+        "name": "Accuware api tests",
+        "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+        "args": [
+            "-u",
+            "tdd",
+            "--timeout",
+            "999999",
+            "--colors",
+            "./{,!(node_modules)/**/}*accuware_api_test.js"
         ],
         "internalConsoleOptions": "openOnSessionStart"
     },
@@ -96,21 +111,6 @@
     {
         "type": "node",
         "request": "launch",
-        "name": "recordings writer for usage analysis test",
-        "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
-        "args": [
-            "-u",
-            "tdd",
-            "--timeout",
-            "999999",
-            "--colors",
-            "./{,!(node_modules)/**/}*recordings_writer_for_usage_analysis_test.js"
-        ],
-        "internalConsoleOptions": "openOnSessionStart"
-    },
-    {
-        "type": "node",
-        "request": "launch",
         "name": "unconverted recordings getter test",
         "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
         "args": [
@@ -120,6 +120,21 @@
             "999999",
             "--colors",
             "./{,!(node_modules)/**/}*unconverted_recordings_getter_test.js"
+        ],
+        "internalConsoleOptions": "openOnSessionStart"
+    },
+    {
+        "type": "node",
+        "request": "launch",
+        "name": "recordings writer for usage analysis test",
+        "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+        "args": [
+            "-u",
+            "tdd",
+            "--timeout",
+            "999999",
+            "--colors",
+            "./{,!(node_modules)/**/}*recordings_writer_for_usage_analysis_test.js"
         ],
         "internalConsoleOptions": "openOnSessionStart"
     },
