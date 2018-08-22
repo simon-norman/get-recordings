@@ -50,26 +50,6 @@ const saveRecordingsInUsageAnalysisFormat = (accuwareRecordings) => {
   }
 };
 
-const handleApiResponseError = (error) => {
-  const responseCode = error.response.status;
-  if (responseCode === 401 || responseCode === 400 || responseCode === 403) {
-    console.log(error);
-    process.exit();
-  } else {
-    console.log(error);
-  }
-};
-
-const handleApiResponse = (accuwareApiCallPromise) => {
-  accuwareApiCallPromise
-    .then((accuwareApiResponse) => {
-      saveRecordingsInUsageAnalysisFormat(accuwareApiResponse.data);
-    })
-    .catch((error) => {
-      handleApiResponseError(error);
-    });
-};
-
 const startFunctionPoller = () => {
   functionPoller = diContainer.getDependency('functionPoller');
   functionPoller.on(functionPollerConfig.functionResultEventName, (accuwareApiCallPromise) => {
