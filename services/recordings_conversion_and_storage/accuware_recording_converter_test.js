@@ -5,11 +5,16 @@ const AccuwareRecordingConverterStampFactory = require('./accuware_recording_con
 const InvalidLocationInRecordingError = require('../../helpers/error_handling/errors/InvalidLocationInRecordingError.js');
 const InvalidTimestampInRecordingError = require('../../helpers/error_handling/errors/InvalidTimestampInRecordingError.js');
 
-describe('accuware_recording_parser_test', () => {
+describe('accuware_recording_converter_test', () => {
   let mockAccuwareRecording;
   let timestampRecorded;
   let AccuwareRecordingConverterStamp;
   let accuwareRecordingConverter;
+
+  const wrappedConvertRecordingForUsageAnalysis = () => {
+    accuwareRecordingConverter
+      .convertRecordingForUsageAnalysis(mockAccuwareRecording, timestampRecorded);
+  };
 
   beforeEach(() => {
     mockAccuwareRecording =
@@ -51,61 +56,31 @@ describe('accuware_recording_parser_test', () => {
   it('should throw InvalidLocationInRecordingError exception if recording location not provided', async function () {
     mockAccuwareRecording.loc = undefined;
 
-    const wrappedAccuwareRecordingConverter = () => {
-      accuwareRecordingConverter
-        .convertRecordingForUsageAnalysis(mockAccuwareRecording, timestampRecorded);
-    };
-
-    expect(wrappedAccuwareRecordingConverter)
-      .throw(InvalidLocationInRecordingError);
+    expect(wrappedConvertRecordingForUsageAnalysis).throw(InvalidLocationInRecordingError);
   });
 
   it('should throw InvalidLocationInRecordingError exception if recording longitude not provided', async function () {
     mockAccuwareRecording.loc.lng = undefined;
 
-    const wrappedAccuwareRecordingConverter = () => {
-      accuwareRecordingConverter
-        .convertRecordingForUsageAnalysis(mockAccuwareRecording, timestampRecorded);
-    };
-
-    expect(wrappedAccuwareRecordingConverter)
-      .throw(InvalidLocationInRecordingError);
+    expect(wrappedConvertRecordingForUsageAnalysis).throw(InvalidLocationInRecordingError);
   });
 
   it('should throw InvalidLocationInRecordingError exception if recording latitude not provided', async function () {
     mockAccuwareRecording.loc.lat = undefined;
 
-    const wrappedAccuwareRecordingConverter = () => {
-      accuwareRecordingConverter
-        .convertRecordingForUsageAnalysis(mockAccuwareRecording, timestampRecorded);
-    };
-
-    expect(wrappedAccuwareRecordingConverter)
-      .throw(InvalidLocationInRecordingError);
+    expect(wrappedConvertRecordingForUsageAnalysis).throw(InvalidLocationInRecordingError);
   });
 
   it('should throw InvalidTimestampInRecordingError exception if timestampRecorded missing', async function () {
     timestampRecorded = undefined;
 
-    const wrappedAccuwareRecordingConverter = () => {
-      accuwareRecordingConverter
-        .convertRecordingForUsageAnalysis(mockAccuwareRecording, timestampRecorded);
-    };
-
-    expect(wrappedAccuwareRecordingConverter)
-      .throw(InvalidTimestampInRecordingError);
+    expect(wrappedConvertRecordingForUsageAnalysis).throw(InvalidTimestampInRecordingError);
   });
 
   it('should throw InvalidTimestampInRecordingError exception if timestampRecorded is not a number', async function () {
     timestampRecorded = 'not a number';
 
-    const wrappedAccuwareRecordingConverter = () => {
-      accuwareRecordingConverter
-        .convertRecordingForUsageAnalysis(mockAccuwareRecording, timestampRecorded);
-    };
-
-    expect(wrappedAccuwareRecordingConverter)
-      .throw(InvalidTimestampInRecordingError);
+    expect(wrappedConvertRecordingForUsageAnalysis).throw(InvalidTimestampInRecordingError);
   });
 });
 

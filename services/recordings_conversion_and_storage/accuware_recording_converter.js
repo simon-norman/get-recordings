@@ -23,7 +23,7 @@ module.exports = (InvalidLocationInRecordingError, InvalidTimestampInRecordingEr
         throw new this.InvalidLocationInRecordingError('Recording location not provided');
       }
       if (!timestampRecorded || isNaN(timestampRecorded)) {
-        throw new this.InvalidTimestampInRecordingError('Invalid timestamp provided to recording');
+        throw new this.InvalidTimestampInRecordingError('Invalid timestamp provided for recording');
       }
       return true;
     },

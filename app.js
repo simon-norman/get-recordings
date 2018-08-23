@@ -22,7 +22,7 @@ const startApp = async () => {
 
   const monitoredSitesRegister = diContainer.getDependency('monitoredSitesRegister');
 
-  monitoredSitesRegister.monitorSite(config.accuwareApi.getDeviceLocations);
+  monitoredSitesRegister.monitorSite(config.accuwareApi.getDeviceRecordings);
 };
 
 startApp();

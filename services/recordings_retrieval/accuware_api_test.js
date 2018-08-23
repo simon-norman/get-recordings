@@ -7,17 +7,17 @@ const AccuwareApiStampFactory = require('./accuware_api.js');
 
 
 describe('accuware_api', () => {
-  let stubbedDeviceLocations;
+  let stubbedDeviceRecordings;
   let getStub;
   let BaseApiStamp;
-  let locationsCallParams;
+  let recordingsCallParams;
   let AccuwareApiStamp;
   let accuwareApi;
 
   const setUpAxiosBaseApiStub = () => {
-    stubbedDeviceLocations = 'devicelocations';
+    stubbedDeviceRecordings = 'devicerecordings';
     getStub = sinon.stub();
-    getStub.returns(stubbedDeviceLocations);
+    getStub.returns(stubbedDeviceRecordings);
     BaseApiStamp = stampit({
       init() {
         this.get = getStub;
@@ -25,10 +25,10 @@ describe('accuware_api', () => {
     });
   };
 
-  const setLocationsCallParams = () => {
-    locationsCallParams = {
+  const setRecordingsCallParams = () => {
+    recordingsCallParams = {
       siteId: '10',
-      includeLocations: 'yes',
+      includeLocations: 'no',
       devicesToInclude: 'all',
       intervalPeriodInSeconds: 1,
       areas: 'yes',
@@ -38,41 +38,40 @@ describe('accuware_api', () => {
   const setUpTests = () => {
     setUpAxiosBaseApiStub();
 
-    setLocationsCallParams();
+    setRecordingsCallParams();
 
     AccuwareApiStamp = AccuwareApiStampFactory(BaseApiStamp);
-    accuwareApi = AccuwareApiStamp(locationsCallParams);
+    accuwareApi = AccuwareApiStamp(recordingsCallParams);
   };
 
-  describe('Get device locations successfully', () => {
+  describe('Get device recordings successfully', () => {
     beforeEach(() => {
       setUpTests();
     });
 
     it('should call accuware api with specified parameters', async () => {
-      await accuwareApi.getDeviceLocations();
+      await accuwareApi.getDeviceRecordings();
 
       expect(getStub.calledWithExactly(
-        `/sites/${locationsCallParams.siteId}/stations/`,
+        `/sites/${recordingsCallParams.siteId}/stations/`,
         {
           params: {
-            loc: locationsCallParams.includeLocations,
-            type: locationsCallParams.devicesToInclude,
-            lrrt: locationsCallParams.intervalPeriodInSeconds,
-            areas: locationsCallParams.areas,
+            loc: recordingsCallParams.includeLocations,
+            type: recordingsCallParams.devicesToInclude,
+            lrrt: recordingsCallParams.intervalPeriodInSeconds,
+            areas: recordingsCallParams.areas,
           },
         },
       )).to.equal(true);
     });
 
-    it('should return device locations as the first parameter', async () => {
-      const deviceLocations = await accuwareApi.getDeviceLocations().response;
-      expect(deviceLocations).to.equal(stubbedDeviceLocations);
-    });
+    it('should return an object that includes the api response and the timestamp, as UNIX epoch milliseconds, that the call was made', async () => {
+      const returnedObject = accuwareApi.getDeviceRecordings();
 
-    it('should return the timestamp, as miliseconds since UNIX epoch, that the call was made as the second parameter', async () => {
-      const timestampCallMade = await accuwareApi.getDeviceLocations().timestampCallMade;
-      expect(isNaN(timestampCallMade)).to.equal(false);
+      const deviceRecordings = await returnedObject.response;
+      expect(deviceRecordings).to.equal(stubbedDeviceRecordings);
+
+      expect(isNaN(returnedObject.timestampCallMade)).to.equal(false);
     });
   });
 
@@ -90,24 +89,24 @@ describe('accuware_api', () => {
     beforeEach(() => {
       setUpAxiosBaseApiStub();
 
-      setLocationsCallParams();
+      setRecordingsCallParams();
 
       AccuwareApiStamp = AccuwareApiStampFactory(BaseApiStamp);
     });
 
     it('should throw error if site id not provided', async () => {
-      delete locationsCallParams.siteId;
+      delete recordingsCallParams.siteId;
       const createAccuwareApiWithoutSiteId = () => {
-        AccuwareApiStamp(locationsCallParams);
+        AccuwareApiStamp(recordingsCallParams);
       };
 
       expect(createAccuwareApiWithoutSiteId).to.throw(TypeError);
     });
 
     it('should throw error if interval period not provided', async () => {
-      delete locationsCallParams.intervalPeriodInSeconds;
+      delete recordingsCallParams.intervalPeriodInSeconds;
       const createAccuwareApiWithoutIntervalPeriod = () => {
-        AccuwareApiStamp(locationsCallParams);
+        AccuwareApiStamp(recordingsCallParams);
       };
 
       expect(createAccuwareApiWithoutIntervalPeriod).to.throw(TypeError);
