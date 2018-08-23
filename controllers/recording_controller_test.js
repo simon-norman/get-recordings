@@ -55,59 +55,23 @@ describe('recording_controller', () => {
     };
   };
 
-  beforeEach(() => {
-    setMockRecordingToBeSaved();
-
-    setUpMockRecordingModelWithSpies();
-  });
-
   describe('Save recording', () => {
     beforeEach(() => {
+      setMockRecordingToBeSaved();
+
+      setUpMockRecordingModelWithSpies();
+
       RecordingControllerStamp =
         RecordingControllerStampFactory(EventEmittableStamp, MockRecordingModel);
 
       recordingController = RecordingControllerStamp();
     });
 
-    it('should save recording', async function () {
-      recordingController.saveSingleRecording(mockRecordingToBeSaved);
+    it('should save recording, returning promise for the save call', async function () {
+      await recordingController.saveSingleRecording(mockRecordingToBeSaved);
 
       expect(saveRecordingSpy.calledOnce).to.equal(true);
       expect(mockModelConstructorSpy.args[0][0]).to.deep.equal(mockRecordingToBeSaved);
-    });
-  });
-
-  describe('Handle errors', () => {
-    let MockRecordingModelThrowsError;
-
-    beforeEach(() => {
-      MockRecordingModelThrowsError = class extends MockRecordingModel {
-        save() {
-          saveRecordingSpy();
-          return new Promise((resolve, reject) => {
-            reject(new Error('Save error'));
-          });
-        }
-      };
-
-      RecordingControllerStamp =
-        RecordingControllerStampFactory(EventEmittableStamp, MockRecordingModelThrowsError);
-
-      recordingController = RecordingControllerStamp();
-    });
-
-    it('should pass error event if error encountered when saving recordings', function (done) {
-      const errors = [];
-
-      recordingController.on('saverecordingerror', (error) => {
-        errors.push(error);
-      });
-      recordingController.saveSingleRecording(mockRecordingToBeSaved);
-
-      setTimeout(() => {
-        expect(errors.length).to.equal(1);
-        done();
-      }, 100);
     });
 
     it('should throw error if event emittable stamp not provided to stamp factory', function () {

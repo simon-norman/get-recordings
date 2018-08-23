@@ -17,10 +17,7 @@ module.exports = (EventEmittableStamp, Recording) => {
           spaceIds: recording.spaceIds,
         });
 
-        recordingModel.save()
-          .catch((error) => {
-            this.emit('saverecordingerror', error);
-          });
+        return recordingModel.save();
       },
     },
   });
