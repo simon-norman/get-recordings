@@ -9,7 +9,9 @@ const FunctionPollerStampFactory = require('../services/function_poller');
 const InvalidLocationInRecordingError = require('../helpers/error_handling/errors/InvalidLocationInRecordingError');
 const InvalidTimestampInRecordingError = require('../helpers/error_handling/errors/InvalidTimestampInRecordingError.js');
 const RecordingsWriterForUsageAnalysisStampFactory = require('../services/recordings_writer_for_usage_analysis');
+const UnconvertedRecordingsGetterStampFactory = require('../services/unconverted_recordings_getter');
 const AccuwareRecordingConverterStampFactory = require('../services/accuware_recording_converter');
+const MonitoredSitesRegisterStampFactory = require('../services/monitored_sites_register');
 const Recording = require('../models/recording');
 const RecordingControllerStampFactory = require('../controllers/recording_controller');
 
@@ -49,7 +51,20 @@ const registerRecordingController = () => {
 const registerRecordingsWriterForUsageAnalysis = () => {
   diContainer.registerDependencyFromFactory('RecordingsWriterForUsageAnalysisStamp', RecordingsWriterForUsageAnalysisStampFactory);
   const RecordingsWriterForUsageAnalysisStamp = diContainer.getDependency('RecordingsWriterForUsageAnalysisStamp');
-  diContainer.registerDependency('recordingsWriterForUsageAnalysis', RecordingsWriterForUsageAnalysisStamp());
+  const accuwareRecordingConverter = diContainer.getDependency('accuwareRecordingConverter');
+  diContainer.registerDependency('recordingsWriterForUsageAnalysis', RecordingsWriterForUsageAnalysisStamp(accuwareRecordingConverter));
+};
+
+const registerUnconvertedRecordingsGetter = () => {
+  diContainer.registerDependencyFromFactory('UnconvertedRecordingsGetterStamp', UnconvertedRecordingsGetterStampFactory);
+  const UnconvertedRecordingsGetterStamp = diContainer.getDependency('UnconvertedRecordingsGetterStamp');
+  diContainer.registerDependency('unconvertedRecordingsGetter', UnconvertedRecordingsGetterStamp());
+};
+
+const registerMonitoredSitesRegister = () => {
+  diContainer.registerDependencyFromFactory('MonitoredSitesRegisterStamp', MonitoredSitesRegisterStampFactory);
+  const MonitoredSitesRegisterStamp = diContainer.getDependency('MonitoredSitesRegisterStamp');
+  diContainer.registerDependency('monitoredSitesRegister', MonitoredSitesRegisterStamp());
 };
 
 const wireUpApp = () => {
@@ -60,10 +75,13 @@ const wireUpApp = () => {
   registerAccuwareApi();
   diContainer.registerDependency('EventEmittableStamp', EventEmittableStamp);
   registerFunctionPoller();
+
   registerRecordingConverter();
   registerRecordingController();
   registerRecordingsWriterForUsageAnalysis();
+  registerUnconvertedRecordingsGetter();
 
+  registerMonitoredSitesRegister();
   return diContainer;
 };
 

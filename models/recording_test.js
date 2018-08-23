@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const { getConfigForEnvironment } = require('../config/config.js');
 const Recording = require('./recording.js');
 
-describe('recording_controller', () => {
+describe('recording', () => {
   let config;
   let mockRecording;
 

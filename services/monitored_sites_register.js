@@ -2,11 +2,7 @@
 
 const stampit = require('stampit');
 
-module.exports = (
-  AccuwareApiStamp,
-  FunctionPollerStamp,
-  unconvertedRecordingsGetter,
-) => stampit({
+module.exports = (AccuwareApiStamp, FunctionPollerStamp, unconvertedRecordingsGetter) => stampit({
 
   props: {
     AccuwareApiStamp,

@@ -28,8 +28,9 @@ module.exports = DependencyNotFoundError => stampit({
 
     getDependenciesOfFactory(factory) {
       try {
-        const dependenciesOfFactory = parseFunctionArgs(factory)
-          .map(dependencyName => this.getDependency(dependencyName));
+        const dependencyNamesOfFactory = parseFunctionArgs(factory);
+        const dependenciesOfFactory =
+          dependencyNamesOfFactory.map(dependencyName => this.getDependency(dependencyName));
         return dependenciesOfFactory;
       } catch (error) {
         if (error instanceof DependencyNotFoundError) {

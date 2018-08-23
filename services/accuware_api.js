@@ -35,10 +35,17 @@ module.exports = (BaseApiStamp) => {
 
       methods: {
         getDeviceLocations() {
-          return this.get(
+          const timestampCallMade = Date.now();
+
+          const response = this.get(
             `${this.finalDeviceLocationsPath}`,
             this.locationsCallParams,
           );
+
+          return {
+            response,
+            timestampCallMade,
+          };
         },
 
         setFinalDeviceLocationsPath(siteId) {

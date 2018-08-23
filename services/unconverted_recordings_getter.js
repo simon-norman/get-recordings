@@ -13,17 +13,20 @@ module.exports = recordingsWriterForUsageAnalysis => stampit({
       getRecordings,
       returnedRecordingsEventName,
     ) {
-      getRecordingsObject.on(returnedRecordingsEventName, (returnedPromise) => {
-        this.handleApiResponse(returnedPromise);
+      getRecordingsObject.on(returnedRecordingsEventName, (getRecordingsResponse) => {
+        this.handleApiResponse(getRecordingsResponse);
       });
 
       getRecordings();
     },
 
-    handleApiResponse(returnedPromise) {
-      returnedPromise
+    handleApiResponse(getRecordingsResponse) {
+      getRecordingsResponse.response
         .then((response) => {
-          this.recordingsWriterForUsageAnalysis.saveRecordingsInUsageAnalysisFormat(response.data);
+          this.recordingsWriterForUsageAnalysis.saveRecordingsInUsageAnalysisFormat(
+            response.data,
+            getRecordingsResponse.timestampCallMade,
+          );
         })
         .catch((error) => {
           this.handleApiResponseError(error);

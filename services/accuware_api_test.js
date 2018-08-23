@@ -65,9 +65,14 @@ describe('accuware_api', () => {
       )).to.equal(true);
     });
 
-    it('should return device locations', async () => {
-      const deviceLocations = await accuwareApi.getDeviceLocations();
+    it('should return device locations as the first parameter', async () => {
+      const deviceLocations = await accuwareApi.getDeviceLocations().response;
       expect(deviceLocations).to.equal(stubbedDeviceLocations);
+    });
+
+    it('should return the timestamp, as miliseconds since UNIX epoch, that the call was made as the second parameter', async () => {
+      const timestampCallMade = await accuwareApi.getDeviceLocations().timestampCallMade;
+      expect(isNaN(timestampCallMade)).to.equal(false);
     });
   });
 
