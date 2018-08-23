@@ -2,8 +2,8 @@
 
 const { expect } = require('chai');
 const AccuwareRecordingConverterStampFactory = require('./accuware_recording_converter');
-const InvalidLocationInRecordingError = require('../helpers/error_handling/errors/InvalidLocationInRecordingError.js');
-const InvalidTimestampInRecordingError = require('../helpers/error_handling/errors/InvalidTimestampInRecordingError.js');
+const InvalidLocationInRecordingError = require('../../helpers/error_handling/errors/InvalidLocationInRecordingError.js');
+const InvalidTimestampInRecordingError = require('../../helpers/error_handling/errors/InvalidTimestampInRecordingError.js');
 
 describe('accuware_recording_parser_test', () => {
   let mockAccuwareRecording;

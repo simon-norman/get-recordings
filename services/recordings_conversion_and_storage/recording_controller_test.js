@@ -3,7 +3,7 @@ const { expect } = require('chai');
 const sinon = require('sinon');
 
 const RecordingControllerStampFactory = require('./recording_controller.js');
-const EventEmittableStamp = require('../helpers/event_emittable_stamp');
+const EventEmittableStamp = require('../../helpers/event_generation/event_emittable_stamp');
 
 
 describe('recording_controller', () => {

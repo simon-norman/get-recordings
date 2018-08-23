@@ -3,7 +3,7 @@ const { expect } = require('chai');
 const sinon = require('sinon');
 
 const FunctionPollerStampFactory = require('./function_poller.js');
-const EventEmittableStamp = require('../helpers/event_emittable_stamp');
+const EventEmittableStamp = require('../event_generation/event_emittable_stamp');
 
 
 describe('function_poller', function () {

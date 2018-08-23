@@ -1,19 +1,20 @@
 
 const DependencyNotFoundError = require('../helpers/error_handling/errors/DependencyNotFoundError.js');
+const DependencyAlreadyRegisteredError = require('../helpers/error_handling/errors/DependencyAlreadyRegisteredError');
 const DiContainerStampFactory = require('./di_container');
 const { getConfigForEnvironment } = require('../config/config.js');
-const AccuwareApiStampFactory = require('../services/accuware_api');
-const BaseApiStampFactory = require('../services/base_api');
-const EventEmittableStamp = require('../helpers/event_emittable_stamp');
-const FunctionPollerStampFactory = require('../services/function_poller');
+const AccuwareApiStampFactory = require('../services/recordings_retrieval/accuware_api');
+const BaseApiStampFactory = require('../helpers/base_api/base_api');
+const EventEmittableStamp = require('../helpers/event_generation/event_emittable_stamp');
+const FunctionPollerStampFactory = require('../helpers/function_poller/function_poller');
 const InvalidLocationInRecordingError = require('../helpers/error_handling/errors/InvalidLocationInRecordingError');
 const InvalidTimestampInRecordingError = require('../helpers/error_handling/errors/InvalidTimestampInRecordingError.js');
-const RecordingsWriterForUsageAnalysisStampFactory = require('../services/recordings_writer_for_usage_analysis');
-const UnconvertedRecordingsGetterStampFactory = require('../services/unconverted_recordings_getter');
-const AccuwareRecordingConverterStampFactory = require('../services/accuware_recording_converter');
-const MonitoredSitesRegisterStampFactory = require('../services/monitored_sites_register');
+const RecordingsWriterForUsageAnalysisStampFactory = require('../services/recordings_conversion_and_storage/recordings_writer_for_usage_analysis');
+const UnconvertedRecordingsGetterStampFactory = require('../services/recordings_retrieval/unconverted_recordings_getter');
+const AccuwareRecordingConverterStampFactory = require('../services/recordings_retrieval/accuware_api');
+const MonitoredSitesRegisterStampFactory = require('../services/sites_register/monitored_sites_register');
 const Recording = require('../models/recording');
-const RecordingControllerStampFactory = require('../controllers/recording_controller');
+const RecordingControllerStampFactory = require('../services/recordings_conversion_and_storage/recording_controller');
 
 let diContainer;
 
@@ -68,7 +69,10 @@ const registerMonitoredSitesRegister = () => {
 };
 
 const wireUpApp = () => {
-  const DiContainerStamp = DiContainerStampFactory(DependencyNotFoundError);
+  const DiContainerStamp = DiContainerStampFactory(
+    DependencyNotFoundError,
+    DependencyAlreadyRegisteredError,
+  );
   diContainer = DiContainerStamp();
 
   registerErrors();

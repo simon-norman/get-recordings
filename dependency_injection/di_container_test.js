@@ -6,14 +6,17 @@ const { diMockDependency1 } = require('./di_mock_dependency_1.js');
 const diMockDependency2 = require('./di_mock_dependency_2.js');
 const diMockDependency3 = require('./di_mock_dependency_3.js');
 const DependencyNotFoundError = require('../helpers/error_handling/errors/DependencyNotFoundError.js');
-
+const DependencyAlreadyRegisteredError = require('../helpers/error_handling/errors/DependencyAlreadyRegisteredError');
 
 describe('di_container', () => {
   let DiContainerStamp;
   let diContainer;
 
   before(() => {
-    DiContainerStamp = DiContainerStampFactory(DependencyNotFoundError);
+    DiContainerStamp = DiContainerStampFactory(
+      DependencyNotFoundError,
+      DependencyAlreadyRegisteredError,
+    );
   });
 
   beforeEach(() => {
@@ -47,7 +50,7 @@ describe('di_container', () => {
         diContainer.registerDependency('diMockDependency1', diMockDependency1);
       };
       wrappedRegisterDependency();
-      expect(wrappedRegisterDependency).to.throw(Error);
+      expect(wrappedRegisterDependency).to.throw(DependencyAlreadyRegisteredError);
     });
 
     it('should throw an error when dependency cannot be found', async () => {
@@ -61,7 +64,7 @@ describe('di_container', () => {
       const wrappedRegisterDependency = () => {
         diContainer.registerDependencyFromFactory('diMockDependency3', diMockDependency3);
       };
-      expect(wrappedRegisterDependency).to.throw('Dependency cannot be registered as one or more of its dependencies have not been registered');
+      expect(wrappedRegisterDependency).to.throw('Dependency diMockDependency3 cannot be registered as one or more of its dependencies have not been registered');
     });
   });
 });

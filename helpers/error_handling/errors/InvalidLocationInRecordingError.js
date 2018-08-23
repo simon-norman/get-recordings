@@ -1,5 +1,5 @@
 
-const CaptureStackTraceError = require('./CaptureStackTraceError');
+const ErrorWithStackTrace = require('./ErrorWithStackTrace');
 
-module.exports = class InvalidLocationInRecordingError extends CaptureStackTraceError {
+module.exports = class InvalidLocationInRecordingError extends ErrorWithStackTrace {
 };
