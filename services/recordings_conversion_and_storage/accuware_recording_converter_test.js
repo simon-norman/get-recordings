@@ -5,7 +5,7 @@ const AccuwareRecordingConverterStampFactory = require('./accuware_recording_con
 const InvalidLocationInRecordingError = require('../../helpers/error_handling/errors/InvalidLocationInRecordingError.js');
 const InvalidTimestampInRecordingError = require('../../helpers/error_handling/errors/InvalidTimestampInRecordingError.js');
 
-describe('accuware_recording_converter_test', () => {
+describe('accuware_recording_converter', () => {
   let mockAccuwareRecording;
   let timestampRecorded;
   let AccuwareRecordingConverterStamp;
