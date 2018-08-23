@@ -7,35 +7,28 @@ const EventEmittableStamp = require('../helpers/event_emittable_stamp');
 
 
 describe('recording_controller', () => {
-  let mockRecordingsToBeSaved;
+  let mockRecordingToBeSaved;
   let mockModelConstructorSpy;
   let saveRecordingSpy;
-  let MockRecordingsModel;
+  let MockRecordingModel;
   let RecordingControllerStamp;
   let recordingController;
 
-  const setMockRecordingsToBeSaved = () => {
-    mockRecordingsToBeSaved = [{
+  const setMockRecordingToBeSaved = () => {
+    mockRecordingToBeSaved = {
       objectId: 1,
       timestampRecorded: 'date1',
       longitude: 10,
       latitude: 10,
       spaceIds: ['1', '2'],
-    },
-    {
-      objectId: 2,
-      timestampRecorded: 'date2',
-      longitude: 20,
-      latitude: 20,
-      spaceIds: ['3', '4'],
-    }];
+    };
   };
 
-  const setUpMockRecordingsModelWithSpies = () => {
+  const setUpMockRecordingModelWithSpies = () => {
     mockModelConstructorSpy = sinon.spy();
     saveRecordingSpy = sinon.spy();
 
-    MockRecordingsModel = class {
+    MockRecordingModel = class {
       constructor({
         objectId,
         timestampRecorded,
@@ -63,33 +56,32 @@ describe('recording_controller', () => {
   };
 
   beforeEach(() => {
-    setMockRecordingsToBeSaved();
+    setMockRecordingToBeSaved();
 
-    setUpMockRecordingsModelWithSpies();
+    setUpMockRecordingModelWithSpies();
   });
 
   describe('Save recording', () => {
     beforeEach(() => {
       RecordingControllerStamp =
-        RecordingControllerStampFactory(EventEmittableStamp, MockRecordingsModel);
+        RecordingControllerStampFactory(EventEmittableStamp, MockRecordingModel);
 
       recordingController = RecordingControllerStamp();
     });
 
     it('should save recording', async function () {
-      recordingController.saveSingleRecording(mockRecordingsToBeSaved);
+      recordingController.saveSingleRecording(mockRecordingToBeSaved);
 
-      expect(saveRecordingSpy.calledTwice);
-      expect(mockModelConstructorSpy.args[0][0]).to.deep.equal(mockRecordingsToBeSaved[0]);
-      expect(mockModelConstructorSpy.args[1][0]).to.deep.equal(mockRecordingsToBeSaved[1]);
+      expect(saveRecordingSpy.calledOnce).to.equal(true);
+      expect(mockModelConstructorSpy.args[0][0]).to.deep.equal(mockRecordingToBeSaved);
     });
   });
 
   describe('Handle errors', () => {
-    let MockRecordingsModelThrowsError;
+    let MockRecordingModelThrowsError;
 
     beforeEach(() => {
-      MockRecordingsModelThrowsError = class extends MockRecordingsModel {
+      MockRecordingModelThrowsError = class extends MockRecordingModel {
         save() {
           saveRecordingSpy();
           return new Promise((resolve, reject) => {
@@ -99,7 +91,7 @@ describe('recording_controller', () => {
       };
 
       RecordingControllerStamp =
-        RecordingControllerStampFactory(EventEmittableStamp, MockRecordingsModelThrowsError);
+        RecordingControllerStampFactory(EventEmittableStamp, MockRecordingModelThrowsError);
 
       recordingController = RecordingControllerStamp();
     });
@@ -110,10 +102,10 @@ describe('recording_controller', () => {
       recordingController.on('saverecordingerror', (error) => {
         errors.push(error);
       });
-      recordingController.saveRecordings(mockRecordingsToBeSaved);
+      recordingController.saveSingleRecording(mockRecordingToBeSaved);
 
       setTimeout(() => {
-        expect(errors.length).to.equal(2);
+        expect(errors.length).to.equal(1);
         done();
       }, 100);
     });
