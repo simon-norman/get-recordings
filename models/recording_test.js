@@ -15,6 +15,15 @@ describe('recording', () => {
     }
   };
 
+  const doesSaveRecordingThrowError = async (recording) => {
+    try {
+      await recording.save();
+      return false;
+    } catch (error) {
+      return true;
+    }
+  };
+
   before(async () => {
     config = getConfigForEnvironment(process.env.NODE_ENV);
     await mongoose.connect(config.trackingDatabase.uri, { useNewUrlParser: true });
@@ -40,6 +49,7 @@ describe('recording', () => {
   it('should save recording when validation is successful', async function () {
     const recording = new Recording(mockRecording);
     const savedRecording = await recording.save();
+
     expect(savedRecording.objectId).to.equal(mockRecording.objectId);
     expect(savedRecording.timestampRecorded.getTime()).to.equal(mockRecording.timestampRecorded);
     expect(savedRecording.longitude).to.equal(mockRecording.longitude);
@@ -52,42 +62,27 @@ describe('recording', () => {
     mockRecording.timestampRecorded = '';
     const recording = new Recording(mockRecording);
 
-    let errorFound = false;
-    try {
-      await recording.save();
-    } catch (error) {
-      errorFound = true;
-    }
+    const wasErrorThrown = await doesSaveRecordingThrowError(recording);
 
-    expect(errorFound).to.equal(true);
+    expect(wasErrorThrown).to.equal(true);
   });
 
   it('should reject save if timestamp not a valid date', async function () {
     mockRecording.timestampRecorded = 'not a valid date';
     const recording = new Recording(mockRecording);
 
-    let errorFound = false;
-    try {
-      await recording.save();
-    } catch (error) {
-      errorFound = true;
-    }
+    const wasErrorThrown = await doesSaveRecordingThrowError(recording);
 
-    expect(errorFound).to.equal(true);
+    expect(wasErrorThrown).to.equal(true);
   });
 
   it('should reject save if objectId not provided', async function () {
     mockRecording.objectId = '';
     const recording = new Recording(mockRecording);
 
-    let errorFound = false;
-    try {
-      await recording.save();
-    } catch (error) {
-      errorFound = true;
-    }
+    const wasErrorThrown = await doesSaveRecordingThrowError(recording);
 
-    expect(errorFound).to.equal(true);
+    expect(wasErrorThrown).to.equal(true);
   });
 });
 

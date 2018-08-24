@@ -1,7 +1,6 @@
 const { expect } = require('chai');
 const sinon = require('sinon');
 const InvalidLocationInRecordingError = require('../../helpers/error_handling/errors/InvalidLocationInRecordingError');
-
 const RecordingsWriterForUsageAnalysisStampFactory = require('./recordings_writer_for_usage_analysis');
 
 
@@ -18,6 +17,7 @@ describe('recordings_writer_for_usage_analysis', function () {
 
   const setUpMockRecordingController = () => {
     stubbedSaveSingleRecording = sinon.stub();
+
     mockRecordingController = {
       saveSingleRecording: stubbedSaveSingleRecording,
     };
@@ -27,22 +27,28 @@ describe('recordings_writer_for_usage_analysis', function () {
     mockConvertedRecording = 'converted recording';
     stubbedConvertRecordingForUsageAnalysis = sinon.stub();
     stubbedConvertRecordingForUsageAnalysis.returns(mockConvertedRecording);
+
     mockRecordingConverter = {
       convertRecordingForUsageAnalysis: stubbedConvertRecordingForUsageAnalysis,
     };
   };
 
+  const setUpRecordingsWriterForUsageAnalysis = () => {
+    RecordingsWriterForUsageAnalysisStamp = RecordingsWriterForUsageAnalysisStampFactory(
+      mockRecordingController,
+      InvalidLocationInRecordingError,
+    );
+
+    recordingsWriterForUsageAnalysis =
+      RecordingsWriterForUsageAnalysisStamp(mockRecordingConverter);
+  };
+
   beforeEach(() => {
     setUpMockRecordingController();
-    RecordingsWriterForUsageAnalysisStamp =
-      RecordingsWriterForUsageAnalysisStampFactory(
-        mockRecordingController,
-        InvalidLocationInRecordingError,
-      );
 
     setUpMockRecordingConverter();
-    recordingsWriterForUsageAnalysis
-        = RecordingsWriterForUsageAnalysisStamp(mockRecordingConverter);
+
+    setUpRecordingsWriterForUsageAnalysis();
 
     mockRecordings = [{ recordingData: 'data1' }, { recordingData: 'data2' }];
     mockTimestamp = 'timestamp';
@@ -82,6 +88,7 @@ describe('recordings_writer_for_usage_analysis', function () {
 
     it('should throw error if any other error encounterd', function () {
       stubbedConvertRecordingForUsageAnalysis.throws();
+
       const wrappedSaveRecordingsInUsageAnalysisFormat = () => {
         recordingsWriterForUsageAnalysis
           .saveRecordingsInUsageAnalysisFormat(mockRecordings, mockTimestamp);

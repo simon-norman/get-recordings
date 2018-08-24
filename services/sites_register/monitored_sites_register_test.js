@@ -53,7 +53,7 @@ describe('monitored_sites_register', function () {
       },
 
       methods: {
-        getDeviceLocations() {
+        getDeviceRecordings() {
           return this.apiConfig;
         },
       },

@@ -15,7 +15,7 @@ const config = {
   development: {
     accuwareApi: {
       baseConfig: configSharedAcrossEnvironments.accuwareApiConfig,
-      getDeviceLocations: {
+      getDeviceRecordings: {
         siteId: 1001,
         intervalPeriodInSeconds: 5,
         includeLocations: 'yes',
@@ -31,7 +31,7 @@ const config = {
   test: {
     accuwareApi: {
       baseConfig: configSharedAcrossEnvironments.accuwareApiConfig,
-      getDeviceLocations: {
+      getDeviceRecordings: {
         siteId: process.env.ACCUWARE_SITE_ID,
         intervalPeriodInSeconds: 5,
         includeLocations: 'yes',
@@ -47,7 +47,7 @@ const config = {
   qa: {
     accuwareApi: {
       baseConfig: configSharedAcrossEnvironments.accuwareApiConfig,
-      getDeviceLocations: {
+      getDeviceRecordings: {
         siteId: process.env.ACCUWARE_SITE_ID,
         intervalPeriodInSeconds: 5,
         includeLocations: 'yes',
@@ -63,7 +63,7 @@ const config = {
   production: {
     accuwareApi: {
       baseConfig: configSharedAcrossEnvironments.accuwareApiConfig,
-      getDeviceLocations: {
+      getDeviceRecordings: {
         siteId: process.env.ACCUWARE_SITE_ID,
         intervalPeriodInSeconds: 5,
         includeLocations: 'yes',

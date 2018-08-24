@@ -6,11 +6,10 @@ const required = (msg) => {
 
 module.exports = (BaseApiStamp = required('BaseApiStamp arg is required')) => {
   if (BaseApiStamp) {
-    const privateMethod = Symbol('privateMethod');
     const AccuwareApiStamp = stampit({
       props: {
-        baseDeviceLocationsPath: '/sites/siteId/stations/',
-        locationsCallParams: {
+        baseDeviceRecordingsPath: '/sites/siteId/stations/',
+        recordingsCallParams: {
           params: {
           },
         },
@@ -24,34 +23,27 @@ module.exports = (BaseApiStamp = required('BaseApiStamp arg is required')) => {
         areas = 'yes',
       }) {
         if (!siteId) {
-          throw new TypeError('Site ID not provided to get device locations');
+          throw new TypeError('Site ID not provided to get device recordings');
         }
 
         if (!intervalPeriodInSeconds) {
-          throw new TypeError('Interval period not provided to get device locations (e.g. get devices detected in last 15 seconds');
+          throw new TypeError('Interval period not provided to get device recordings (e.g. get devices detected in last 15 seconds');
         }
 
-        this.setFinalDeviceLocationsPath(siteId);
-        /* this.locationsCallParams.params = {
-          lrrt: intervalPeriodInSeconds,
-          loc: includeLocations
-        } */
-        this.locationsCallParams.params.lrrt = intervalPeriodInSeconds;
-        this.locationsCallParams.params.loc = includeLocations;
-        this.locationsCallParams.params.type = devicesToInclude;
-        this.locationsCallParams.params.areas = areas;
+        this.setFinalDeviceRecordingsPath(siteId);
+        this.recordingsCallParams.params.lrrt = intervalPeriodInSeconds;
+        this.recordingsCallParams.params.loc = includeLocations;
+        this.recordingsCallParams.params.type = devicesToInclude;
+        this.recordingsCallParams.params.areas = areas;
       },
 
       methods: {
-        [privateMethod]() {
-          // test private method
-        },
-        getDeviceLocations() {
+        getDeviceRecordings() {
           const timestampCallMade = Date.now();
 
           const response = this.get(
-            this.finalDeviceLocationsPath,
-            this.locationsCallParams,
+            `${this.finalDeviceRecordingsPath}`,
+            this.recordingsCallParams,
           );
 
           return {
@@ -60,8 +52,8 @@ module.exports = (BaseApiStamp = required('BaseApiStamp arg is required')) => {
           };
         },
 
-        setFinalDeviceLocationsPath(siteId) {
-          this.finalDeviceLocationsPath = this.baseDeviceLocationsPath.replace('siteId', siteId);
+        setFinalDeviceRecordingsPath(siteId) {
+          this.finalDeviceRecordingsPath = this.baseDeviceRecordingsPath.replace('siteId', siteId);
         },
       },
     });

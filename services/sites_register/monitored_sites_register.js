@@ -16,7 +16,7 @@ module.exports = (AccuwareApiStamp, FunctionPollerStamp, unconvertedRecordingsGe
       const accuwareApi = AccuwareApiStamp(siteConfig);
 
       const functionPollerConfig = {
-        functionToPoll: accuwareApi.getDeviceLocations.bind(accuwareApi),
+        functionToPoll: accuwareApi.getDeviceRecordings.bind(accuwareApi),
         functionResultEventName: this.functionResultEventName,
         pollingIntervalInMilSecs: siteConfig.intervalPeriodInSeconds * 1000,
       };
