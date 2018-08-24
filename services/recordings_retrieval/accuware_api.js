@@ -1,7 +1,12 @@
 const stampit = require('stampit');
 
-module.exports = (BaseApiStamp) => {
+const required = (msg) => {
+  throw new Error(msg);
+};
+
+module.exports = (BaseApiStamp = required('BaseApiStamp arg is required')) => {
   if (BaseApiStamp) {
+    const privateMethod = Symbol('privateMethod');
     const AccuwareApiStamp = stampit({
       props: {
         baseDeviceLocationsPath: '/sites/siteId/stations/',
@@ -27,6 +32,10 @@ module.exports = (BaseApiStamp) => {
         }
 
         this.setFinalDeviceLocationsPath(siteId);
+        /* this.locationsCallParams.params = {
+          lrrt: intervalPeriodInSeconds,
+          loc: includeLocations
+        } */
         this.locationsCallParams.params.lrrt = intervalPeriodInSeconds;
         this.locationsCallParams.params.loc = includeLocations;
         this.locationsCallParams.params.type = devicesToInclude;
@@ -34,11 +43,14 @@ module.exports = (BaseApiStamp) => {
       },
 
       methods: {
+        [privateMethod]() {
+          // test private method
+        },
         getDeviceLocations() {
           const timestampCallMade = Date.now();
 
           const response = this.get(
-            `${this.finalDeviceLocationsPath}`,
+            this.finalDeviceLocationsPath,
             this.locationsCallParams,
           );
 

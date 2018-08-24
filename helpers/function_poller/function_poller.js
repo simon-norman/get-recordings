@@ -1,10 +1,11 @@
 
 const stampit = require('stampit');
 
-module.exports = (EventEmittableStamp) => {
+module.exports = (EventEmittableStamp, InvalidArgumentsError) => {
   const FunctionPollerWithoutEmitterStamp = stampit({
     init(config) {
       this.checkPollConfigValid(config);
+
       this.functionResultEventName = config.functionResultEventName;
       this.functionToPoll = config.functionToPoll;
       this.pollingIntervalInMilSecs = config.pollingIntervalInMilSecs;
@@ -23,15 +24,21 @@ module.exports = (EventEmittableStamp) => {
       },
 
       checkPollConfigValid(config) {
+        const errors = [];
         if (!config.pollingIntervalInMilSecs > 0) {
-          throw new TypeError('Polling interval must be a number greater than 0');
-        } else if (!config.functionResultEventName) {
-          throw new TypeError('No function result event name provided to emit events with that name');
-        } else if (!config.functionToPoll) {
-          throw new TypeError('No function provided to function poller');
-        } else {
-          return true;
+          errors.push('Polling interval must be a number greater than 0');
         }
+        if (!config.functionResultEventName) {
+          errors.push('No function result event name provided to emit events');
+        }
+        if (!config.functionToPoll) {
+          errors.push('No function provided to function poller');
+        }
+
+        if (errors.length) {
+          throw new InvalidArgumentsError(errors.join('; '));
+        }
+        return true;
       },
     },
   });

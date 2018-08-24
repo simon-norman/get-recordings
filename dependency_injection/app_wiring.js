@@ -1,5 +1,6 @@
 
 const DependencyNotFoundError = require('../helpers/error_handling/errors/DependencyNotFoundError.js');
+const InvalidArgumentsError = require('../helpers/error_handling/errors/InvalidArgumentsError');
 const DependencyAlreadyRegisteredError = require('../helpers/error_handling/errors/DependencyAlreadyRegisteredError');
 const DiContainerStampFactory = require('./di_container');
 const { getConfigForEnvironment } = require('../config/config.js');
@@ -21,6 +22,7 @@ let diContainer;
 const registerErrors = () => {
   diContainer.registerDependency('InvalidLocationInRecordingError', InvalidLocationInRecordingError);
   diContainer.registerDependency('InvalidTimestampInRecordingError', InvalidTimestampInRecordingError);
+  diContainer.registerDependency('InvalidArgumentsError', InvalidArgumentsError);
 };
 
 const registerAccuwareApi = () => {

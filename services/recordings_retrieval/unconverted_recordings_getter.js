@@ -20,12 +20,12 @@ module.exports = recordingsWriterForUsageAnalysis => stampit({
       getRecordings();
     },
 
-    handleApiResponse(getRecordingsResponse) {
-      getRecordingsResponse.response
-        .then((response) => {
+    handleApiResponse({ response, timestampCallMade }) {
+      response
+        .then(({ data }) => {
           this.recordingsWriterForUsageAnalysis.saveRecordingsInUsageAnalysisFormat(
-            response.data,
-            getRecordingsResponse.timestampCallMade,
+            data,
+            timestampCallMade,
           );
         })
         .catch((error) => {

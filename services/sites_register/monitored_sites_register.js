@@ -20,6 +20,7 @@ module.exports = (AccuwareApiStamp, FunctionPollerStamp, unconvertedRecordingsGe
         functionResultEventName: this.functionResultEventName,
         pollingIntervalInMilSecs: siteConfig.intervalPeriodInSeconds * 1000,
       };
+
       const functionPoller = FunctionPollerStamp(functionPollerConfig);
 
       unconvertedRecordingsGetter.startGettingUnconvertedRecordings(
