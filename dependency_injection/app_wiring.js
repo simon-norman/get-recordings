@@ -3,15 +3,16 @@ const DependencyNotFoundError = require('../services/error_handling/errors/Depen
 const DependencyAlreadyRegisteredError = require('../services/error_handling/errors/DependencyAlreadyRegisteredError');
 const DiContainerStampFactory = require('./di_container');
 const { getConfigForEnvironment } = require('../config/config.js');
+const InvalidLocationInRecordingError = require('../services/error_handling/errors/InvalidLocationInRecordingError');
+const InvalidTimestampInRecordingError = require('../services/error_handling/errors/InvalidTimestampInRecordingError.js');
+const { logException } = require('../services/error_handling/logger/logger.js');
 const AccuwareApiStampFactory = require('../services/recordings_retrieval/accuware_api');
 const BaseApiStampFactory = require('../helpers/base_api/base_api');
 const EventEmittableStamp = require('../helpers/event_generation/event_emittable_stamp');
 const FunctionPollerStampFactory = require('../services/function_poller/function_poller');
-const InvalidLocationInRecordingError = require('../services/error_handling/errors/InvalidLocationInRecordingError');
-const InvalidTimestampInRecordingError = require('../services/error_handling/errors/InvalidTimestampInRecordingError.js');
 const RecordingsWriterForUsageAnalysisStampFactory = require('../services/recordings_conversion_and_storage/recordings_writer_for_usage_analysis');
 const UnconvertedRecordingsGetterStampFactory = require('../services/recordings_retrieval/unconverted_recordings_getter');
-const AccuwareRecordingConverterStampFactory = require('../services/recordings_retrieval/accuware_api');
+const AccuwareRecordingConverterStampFactory = require('../services/recordings_conversion_and_storage/accuware_recording_converter');
 const MonitoredSitesRegisterStampFactory = require('../services/sites_register/monitored_sites_register');
 const Recording = require('../models/recording');
 const RecordingControllerStampFactory = require('../controllers//recording_controller');
@@ -76,6 +77,8 @@ const wireUpApp = () => {
   diContainer = DiContainerStamp();
 
   registerErrors();
+  diContainer.registerDependency('logException', logException);
+
   registerAccuwareApi();
   diContainer.registerDependency('EventEmittableStamp', EventEmittableStamp);
   registerFunctionPoller();
