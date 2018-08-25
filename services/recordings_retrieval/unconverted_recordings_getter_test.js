@@ -157,5 +157,17 @@ describe('unconverted_recordings_getter', function () {
       expect(exceptionPassedToStubbedLogException).to.equal(getRecordingsResponseError);
       expect(stubbedStopGettingRecordingsForThisSiteFunction.calledOnce).to.equal(true);
     });
+
+    it('should log exception for other HTTP codes from get recordings call WITHOUT STOPPING the get calls', async function () {
+      setGetRecordingsResponseToErrorWithThisHttpCode(404);
+
+      startGettingUnconvertedRecordings();
+
+      await setPromisifiedTimeout(50);
+
+      const exceptionPassedToStubbedLogException = stubbedLogExceptionFunction.firstCall.args[0];
+      expect(exceptionPassedToStubbedLogException).to.equal(getRecordingsResponseError);
+      expect(stubbedStopGettingRecordingsForThisSiteFunction.calledOnce).to.equal(false);
+    });
   });
 });

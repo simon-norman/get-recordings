@@ -54,7 +54,7 @@ module.exports = (recordingsWriterForUsageAnalysis, logException) => stampit({
         this.stopGettingRecordingsForThisSite();
         this.logException(error);
       } else {
-        console.log(error);
+        this.logException(error);
       }
     },
   },
