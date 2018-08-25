@@ -53,6 +53,16 @@ describe('di_container', () => {
       expect(wrappedRegisterDependency).to.throw(DependencyAlreadyRegisteredError);
     });
 
+    it('should throw an error, during register dependency from factory, when dependency has already been registered', async () => {
+      diContainer.registerDependency('diMockDependency1', diMockDependency1);
+
+      const wrappedRegisterDependencyFromFactory = () => {
+        diContainer.registerDependencyFromFactory('diMockDependency2', diMockDependency2);
+      };
+      wrappedRegisterDependencyFromFactory();
+      expect(wrappedRegisterDependencyFromFactory).to.throw(DependencyAlreadyRegisteredError);
+    });
+
     it('should throw an error when dependency cannot be found', async () => {
       const wrappedGetDependency = () => {
         diContainer.getDependency('unregistereddependency');

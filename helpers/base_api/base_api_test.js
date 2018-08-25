@@ -52,6 +52,12 @@ describe('base_api', () => {
     expect(wrappedCreateAccuwareApi).to.throw(Error);
   });
 
+  it('should throw error if api headers undefined', async function () {
+    apiConfig.headers = '';
+
+    expect(wrappedCreateAccuwareApi).to.throw(Error);
+  });
+
   it('should include error messages for each missing username and password error thrown', function () {
     apiConfig.headers.authorization.password = '';
     apiConfig.headers.authorization.username = '';

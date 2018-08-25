@@ -3,7 +3,6 @@ const { expect } = require('chai');
 const sinon = require('sinon');
 
 const RecordingControllerStampFactory = require('./recording_controller.js');
-const EventEmittableStamp = require('../helpers/event_generation/event_emittable_stamp');
 
 
 describe('recording_controller', () => {
@@ -62,7 +61,7 @@ describe('recording_controller', () => {
       setUpMockRecordingModelWithSpies();
 
       RecordingControllerStamp =
-        RecordingControllerStampFactory(EventEmittableStamp, MockRecordingModel);
+        RecordingControllerStampFactory(MockRecordingModel);
 
       recordingController = RecordingControllerStamp();
     });
@@ -72,14 +71,6 @@ describe('recording_controller', () => {
 
       expect(saveRecordingSpy.calledOnce).to.equal(true);
       expect(mockModelConstructorSpy.args[0][0]).to.deep.equal(mockRecordingToBeSaved);
-    });
-
-    it('should throw error if event emittable stamp not provided to stamp factory', function () {
-      const wrappedStampFactoryFunction = () => {
-        RecordingControllerStampFactory();
-      };
-
-      expect(wrappedStampFactoryFunction).throw();
     });
   });
 });

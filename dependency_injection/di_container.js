@@ -25,7 +25,7 @@ module.exports = (DependencyNotFoundError, DependencyAlreadyRegisteredError) => 
         const dependenciesOfFactory = this.getDependenciesOfFactory(factory);
         const dependencyFromFactory = factory(...dependenciesOfFactory);
 
-        this.dependencies[name] = dependencyFromFactory;
+        this.registerDependency(name, dependencyFromFactory);
       } catch (error) {
         if (error instanceof DependencyNotFoundError) {
           throw new Error(`Dependency ${name} cannot be registered as one or more of its dependencies have not been registered`);
