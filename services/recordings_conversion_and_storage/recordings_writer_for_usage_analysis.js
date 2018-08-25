@@ -2,10 +2,11 @@
 
 const stampit = require('stampit');
 
-module.exports = (recordingController, InvalidLocationInRecordingError) => stampit({
+module.exports = (recordingController, InvalidLocationInRecordingError, logException) => stampit({
   props: {
     recordingController,
     InvalidLocationInRecordingError,
+    logException,
   },
 
   init(recordingConverter) {
@@ -19,6 +20,7 @@ module.exports = (recordingController, InvalidLocationInRecordingError) => stamp
           this.saveSingleRecordingInUsageAnalysisFormat(recording, timestampRecorded);
         } catch (error) {
           if (error instanceof this.InvalidLocationInRecordingError) {
+            logException(error);
             continue;
           } else {
             throw error;

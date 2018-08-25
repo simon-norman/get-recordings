@@ -17,6 +17,12 @@ describe('function_poller', function () {
     functionPoller = FunctionPollerStamp(functionPollerConfig);
   };
 
+  const setPromisifiedTimeout = timeoutPeriodInMilliseconds => new Promise((resolve) => {
+    setTimeout(() => {
+      resolve();
+    }, timeoutPeriodInMilliseconds);
+  });
+
   beforeEach(() => {
     dataReturnedByFunction = 'data';
     stubbedFunction = sinon.stub();
@@ -33,7 +39,7 @@ describe('function_poller', function () {
   });
 
   describe('Register function with poller, which sends events with result of function', function () {
-    it('should send events with the result of the function every X seconds, where X is the polling interval specified', function (done) {
+    it('should send events with the result of the function every X seconds, where X is the polling interval specified', async function () {
       const resultsFromFunction = [];
       functionPoller.on(functionPollerConfig.functionResultEventName, (functionResult) => {
         resultsFromFunction.push(functionResult);
@@ -41,12 +47,9 @@ describe('function_poller', function () {
 
       functionPoller.pollFunction();
 
-
-      setTimeout(() => {
-        expect(resultsFromFunction.length).to.equal(2);
-        expect(resultsFromFunction[0]).to.equal(dataReturnedByFunction);
-        done();
-      }, 250);
+      await setPromisifiedTimeout(250);
+      expect(resultsFromFunction.length).to.equal(2);
+      expect(resultsFromFunction[0]).to.equal(dataReturnedByFunction);
     });
   });
 
@@ -82,7 +85,7 @@ describe('function_poller', function () {
       }
     });
 
-    it('should emit error event with details of the error if error is thrown when polling function', function () {
+    it('should emit error event with details of the error if error is thrown when polling function', async function () {
       stubbedFunction.throws();
 
       const functionPollerErrors = [];
@@ -91,9 +94,8 @@ describe('function_poller', function () {
       });
       functionPoller.pollFunction();
 
-      setTimeout(() => {
-        expect(functionPollerErrors.length).to.equal(2);
-      }, 250);
+      await setPromisifiedTimeout(250);
+      expect(functionPollerErrors.length).to.equal(2);
     });
   });
 });

@@ -2,18 +2,24 @@
 
 const stampit = require('stampit');
 
-module.exports = recordingsWriterForUsageAnalysis => stampit({
+module.exports = (recordingsWriterForUsageAnalysis, logException) => stampit({
   props: {
     recordingsWriterForUsageAnalysis,
+    logException,
   },
 
   methods: {
-    startGettingUnconvertedRecordings(
+    startGettingUnconvertedRecordings({
       getRecordingsObject,
       getRecordings,
       returnedRecordingsEventName,
-    ) {
-      getRecordingsObject.on(returnedRecordingsEventName, (getRecordingsResponse) => {
+      stopGettingRecordingsForThisSite,
+    }) {
+      this.getRecordingsObject = getRecordingsObject;
+      this.returnedRecordingsEventName = returnedRecordingsEventName;
+      this.stopGettingRecordingsForThisSite = stopGettingRecordingsForThisSite;
+
+      this.getRecordingsObject.on(returnedRecordingsEventName, (getRecordingsResponse) => {
         this.handleApiResponse(getRecordingsResponse);
       });
 
@@ -23,21 +29,30 @@ module.exports = recordingsWriterForUsageAnalysis => stampit({
     handleApiResponse({ response, timestampCallMade }) {
       response
         .then(({ data }) => {
-          this.recordingsWriterForUsageAnalysis.saveRecordingsInUsageAnalysisFormat(
-            data,
-            timestampCallMade,
-          );
+          this.saveRecordingsInUsageAnalysisFormat(data, timestampCallMade);
         })
         .catch((error) => {
           this.handleApiResponseError(error);
         });
     },
 
+    saveRecordingsInUsageAnalysisFormat(unconvertedRecordings, timestampCallMade) {
+      try {
+        this.recordingsWriterForUsageAnalysis.saveRecordingsInUsageAnalysisFormat(
+          unconvertedRecordings,
+          timestampCallMade,
+        );
+      } catch (error) {
+        this.stopGettingRecordingsForThisSite();
+        this.logException(error);
+      }
+    },
+
     handleApiResponseError(error) {
       const responseCode = error.response.status;
       if (responseCode === 401 || responseCode === 400 || responseCode === 403) {
-        console.log(error);
-        process.exit();
+        this.stopGettingRecordingsForThisSite();
+        this.logException(error);
       } else {
         console.log(error);
       }

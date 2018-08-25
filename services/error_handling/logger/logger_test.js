@@ -11,7 +11,7 @@ describe('logger', () => {
     const mockError = new Error('error');
     logException(mockError);
 
-    expect(stubbedRavenCaptureException.calledOnceWithExactly(mockError));
+    expect(stubbedRavenCaptureException.calledOnceWithExactly(mockError)).to.equal(true);
   });
 });
 

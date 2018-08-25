@@ -9,6 +9,7 @@ describe('recordings_writer_for_usage_analysis', function () {
   let mockRecordingController;
   let RecordingsWriterForUsageAnalysisStamp;
   let mockConvertedRecording;
+  let stubbedLogException;
   let stubbedConvertRecordingForUsageAnalysis;
   let mockRecordingConverter;
   let recordingsWriterForUsageAnalysis;
@@ -37,6 +38,7 @@ describe('recordings_writer_for_usage_analysis', function () {
     RecordingsWriterForUsageAnalysisStamp = RecordingsWriterForUsageAnalysisStampFactory(
       mockRecordingController,
       InvalidLocationInRecordingError,
+      stubbedLogException,
     );
 
     recordingsWriterForUsageAnalysis =
@@ -48,6 +50,7 @@ describe('recordings_writer_for_usage_analysis', function () {
 
     setUpMockRecordingConverter();
 
+    stubbedLogException = sinon.stub();
     setUpRecordingsWriterForUsageAnalysis();
 
     mockRecordings = [{ recordingData: 'data1' }, { recordingData: 'data2' }];
@@ -77,13 +80,18 @@ describe('recordings_writer_for_usage_analysis', function () {
         .to.equal(mockConvertedRecording);
     });
 
-    it('should move onto converting and saving the next recording if it catches an InvalidLocationInRecordingError', function () {
-      stubbedConvertRecordingForUsageAnalysis.throws(new InvalidLocationInRecordingError());
+    it('should move onto converting & saving the next recording if it catches an InvalidLocationInRecording, logging the exception', function () {
+      const invalidLocationInRecordingError = new InvalidLocationInRecordingError();
+      stubbedConvertRecordingForUsageAnalysis.throws(invalidLocationInRecordingError);
+
       recordingsWriterForUsageAnalysis
         .saveRecordingsInUsageAnalysisFormat(mockRecordings, mockTimestamp);
 
       expect(stubbedConvertRecordingForUsageAnalysis.secondCall.args)
         .to.deep.equal([mockRecordings[1], mockTimestamp]);
+
+      const exceptionPassedToStubbedLogException = stubbedLogException.firstCall.args[0];
+      expect(exceptionPassedToStubbedLogException).to.equal(invalidLocationInRecordingError);
     });
 
     it('should throw error if any other error encounterd', function () {
