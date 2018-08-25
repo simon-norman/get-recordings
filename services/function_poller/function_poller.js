@@ -1,7 +1,7 @@
 
 const stampit = require('stampit');
 
-module.exports = (EventEmittableStamp, InvalidArgumentsError) => {
+module.exports = (EventEmittableStamp) => {
   const FunctionPollerWithoutEmitterStamp = stampit({
     init(config) {
       this.checkPollConfigValid(config);
@@ -36,7 +36,7 @@ module.exports = (EventEmittableStamp, InvalidArgumentsError) => {
         }
 
         if (errors.length) {
-          throw new InvalidArgumentsError(errors.join('; '));
+          throw new Error(errors.join('; '));
         }
         return true;
       },

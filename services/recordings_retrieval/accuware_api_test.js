@@ -81,7 +81,7 @@ describe('accuware_api', () => {
         AccuwareApiStampFactory();
       };
 
-      expect(createStampWithoutParameters).to.throw(TypeError);
+      expect(createStampWithoutParameters).to.throw(Error);
     });
   });
 
@@ -100,7 +100,7 @@ describe('accuware_api', () => {
         AccuwareApiStamp(recordingsCallParams);
       };
 
-      expect(createAccuwareApiWithoutSiteId).to.throw(TypeError);
+      expect(createAccuwareApiWithoutSiteId).to.throw(Error);
     });
 
     it('should throw error if interval period not provided', async () => {
@@ -109,7 +109,20 @@ describe('accuware_api', () => {
         AccuwareApiStamp(recordingsCallParams);
       };
 
-      expect(createAccuwareApiWithoutIntervalPeriod).to.throw(TypeError);
+      expect(createAccuwareApiWithoutIntervalPeriod).to.throw(Error);
+    });
+
+    it('should include error messages for each error thrown', function () {
+      const createAccuwareApiWithoutParams = () => {
+        AccuwareApiStamp();
+      };
+
+      try {
+        createAccuwareApiWithoutParams();
+      } catch (error) {
+        const errorMessages = error.message.split(';');
+        expect(errorMessages.length).to.equal(2);
+      }
     });
   });
 });

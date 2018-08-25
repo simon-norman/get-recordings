@@ -1,28 +1,26 @@
 
-const DependencyNotFoundError = require('../helpers/error_handling/errors/DependencyNotFoundError.js');
-const InvalidArgumentsError = require('../helpers/error_handling/errors/InvalidArgumentsError');
-const DependencyAlreadyRegisteredError = require('../helpers/error_handling/errors/DependencyAlreadyRegisteredError');
+const DependencyNotFoundError = require('../services/error_handling/errors/DependencyNotFoundError.js');
+const DependencyAlreadyRegisteredError = require('../services/error_handling/errors/DependencyAlreadyRegisteredError');
 const DiContainerStampFactory = require('./di_container');
 const { getConfigForEnvironment } = require('../config/config.js');
 const AccuwareApiStampFactory = require('../services/recordings_retrieval/accuware_api');
 const BaseApiStampFactory = require('../helpers/base_api/base_api');
 const EventEmittableStamp = require('../helpers/event_generation/event_emittable_stamp');
-const FunctionPollerStampFactory = require('../helpers/function_poller/function_poller');
-const InvalidLocationInRecordingError = require('../helpers/error_handling/errors/InvalidLocationInRecordingError');
-const InvalidTimestampInRecordingError = require('../helpers/error_handling/errors/InvalidTimestampInRecordingError.js');
+const FunctionPollerStampFactory = require('../services/function_poller/function_poller');
+const InvalidLocationInRecordingError = require('../services/error_handling/errors/InvalidLocationInRecordingError');
+const InvalidTimestampInRecordingError = require('../services/error_handling/errors/InvalidTimestampInRecordingError.js');
 const RecordingsWriterForUsageAnalysisStampFactory = require('../services/recordings_conversion_and_storage/recordings_writer_for_usage_analysis');
 const UnconvertedRecordingsGetterStampFactory = require('../services/recordings_retrieval/unconverted_recordings_getter');
 const AccuwareRecordingConverterStampFactory = require('../services/recordings_retrieval/accuware_api');
 const MonitoredSitesRegisterStampFactory = require('../services/sites_register/monitored_sites_register');
 const Recording = require('../models/recording');
-const RecordingControllerStampFactory = require('../services/recordings_conversion_and_storage/recording_controller');
+const RecordingControllerStampFactory = require('../controllers//recording_controller');
 
 let diContainer;
 
 const registerErrors = () => {
   diContainer.registerDependency('InvalidLocationInRecordingError', InvalidLocationInRecordingError);
   diContainer.registerDependency('InvalidTimestampInRecordingError', InvalidTimestampInRecordingError);
-  diContainer.registerDependency('InvalidArgumentsError', InvalidArgumentsError);
 };
 
 const registerAccuwareApi = () => {

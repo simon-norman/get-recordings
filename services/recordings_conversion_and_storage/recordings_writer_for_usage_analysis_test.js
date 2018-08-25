@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const sinon = require('sinon');
-const InvalidLocationInRecordingError = require('../../helpers/error_handling/errors/InvalidLocationInRecordingError');
+const InvalidLocationInRecordingError = require('../error_handling/errors/InvalidLocationInRecordingError');
 const RecordingsWriterForUsageAnalysisStampFactory = require('./recordings_writer_for_usage_analysis');
 
 

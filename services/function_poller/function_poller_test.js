@@ -3,8 +3,7 @@ const { expect } = require('chai');
 const sinon = require('sinon');
 
 const FunctionPollerStampFactory = require('./function_poller.js');
-const EventEmittableStamp = require('../event_generation/event_emittable_stamp');
-const InvalidArgumentsError = require('../../helpers/error_handling/errors/InvalidArgumentsError');
+const EventEmittableStamp = require('../../helpers/event_generation/event_emittable_stamp');
 
 
 describe('function_poller', function () {
@@ -29,7 +28,7 @@ describe('function_poller', function () {
       pollingIntervalInMilSecs: 100,
     };
 
-    FunctionPollerStamp = FunctionPollerStampFactory(EventEmittableStamp, InvalidArgumentsError);
+    FunctionPollerStamp = FunctionPollerStampFactory(EventEmittableStamp);
     functionPoller = FunctionPollerStamp(functionPollerConfig);
   });
 
@@ -52,25 +51,25 @@ describe('function_poller', function () {
   });
 
   describe('Throw errors when config values not specified', function () {
-    it('should throw invalid arguments error if event name for function result not specified', function () {
+    it('should throw error if event name for function result not specified', function () {
       functionPollerConfig.functionResultEventName = '';
 
-      expect(wrappedFunctionPollerInstantiate).throw(InvalidArgumentsError);
+      expect(wrappedFunctionPollerInstantiate).throw(Error);
     });
 
-    it('should throw typeerror if no function specified to poll', function () {
+    it('should throw error if no function specified to poll', function () {
       functionPollerConfig.functionToPoll = '';
 
-      expect(wrappedFunctionPollerInstantiate).throw(InvalidArgumentsError);
+      expect(wrappedFunctionPollerInstantiate).throw(Error);
     });
 
-    it('should throw typeerror if polling interval not specified', function () {
+    it('should throw error if polling interval not specified', function () {
       functionPollerConfig.pollingIntervalInMilSecs = '';
 
-      expect(wrappedFunctionPollerInstantiate).throw(InvalidArgumentsError);
+      expect(wrappedFunctionPollerInstantiate).throw(Error);
     });
 
-    it('should include error messages for each invalid arguments error thrown', function () {
+    it('should include error messages for each error thrown due to incorrect arguments passed', function () {
       functionPollerConfig.pollingIntervalInMilSecs = '';
       functionPollerConfig.functionToPoll = '';
       functionPollerConfig.functionResultEventName = '';
