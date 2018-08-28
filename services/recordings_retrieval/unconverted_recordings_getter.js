@@ -18,6 +18,7 @@ module.exports = (recordingsWriterForUsageAnalysis, logException) => stampit({
       this.getRecordingsObject = getRecordingsObject;
       this.returnedRecordingsEventName = returnedRecordingsEventName;
       this.stopGettingRecordingsForThisSite = stopGettingRecordingsForThisSite;
+
       this.boundHandleApiResponse = this.handleApiResponse.bind(this);
 
       this.getRecordingsObject.on(returnedRecordingsEventName, this.boundHandleApiResponse);
@@ -28,7 +29,6 @@ module.exports = (recordingsWriterForUsageAnalysis, logException) => stampit({
     handleApiResponse({ response, timestampCallMade }) {
       response
         .then(({ data }) => {
-          console.log('HERE IS THE RESPONSE HERE I AM HERE IAM');
           this.saveRecordingsInUsageAnalysisFormat(data, timestampCallMade);
         })
         .catch((error) => {
@@ -44,10 +44,7 @@ module.exports = (recordingsWriterForUsageAnalysis, logException) => stampit({
         );
       } catch (error) {
         this.logException(error);
-        this.getRecordingsObject.removeListener(
-          this.returnedRecordingsEventName,
-          this.boundHandleApiResponse,
-        );
+        this.stopListeningForRecordings();
         this.stopGettingRecordingsForThisSite();
       }
     },
@@ -55,11 +52,19 @@ module.exports = (recordingsWriterForUsageAnalysis, logException) => stampit({
     handleApiResponseError(error) {
       const responseCode = error.response.status;
       if (responseCode === 401 || responseCode === 400 || responseCode === 403) {
-        this.stopGettingRecordingsForThisSite();
         this.logException(error);
+        this.stopListeningForRecordings();
+        this.stopGettingRecordingsForThisSite();
       } else {
         this.logException(error);
       }
+    },
+
+    stopListeningForRecordings() {
+      this.getRecordingsObject.removeListener(
+        this.returnedRecordingsEventName,
+        this.boundHandleApiResponse,
+      );
     },
   },
 });

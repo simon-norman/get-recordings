@@ -12,17 +12,6 @@ module.exports = (EventEmittableStamp) => {
     },
 
     methods: {
-      pollFunction() {
-        this.intervalId = setInterval(() => {
-          try {
-            const result = this.functionToPoll();
-            this.emit(this.functionResultEventName, result);
-          } catch (error) {
-            this.emit('error', error);
-          }
-        }, this.pollingIntervalInMilSecs);
-      },
-
       checkPollConfigValid(config) {
         const errors = [];
         if (!config.pollingIntervalInMilSecs > 0) {
@@ -39,6 +28,21 @@ module.exports = (EventEmittableStamp) => {
           throw new Error(errors.join('; '));
         }
         return true;
+      },
+
+      pollFunction() {
+        this.intervalId = setInterval(() => {
+          try {
+            const result = this.functionToPoll();
+            this.emit(this.functionResultEventName, result);
+          } catch (error) {
+            this.emit('error', error);
+          }
+        }, this.pollingIntervalInMilSecs);
+      },
+
+      stopPollFunction() {
+        clearInterval(this.intervalId);
       },
     },
   });

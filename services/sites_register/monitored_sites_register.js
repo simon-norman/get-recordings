@@ -15,11 +15,11 @@ module.exports = (AccuwareApiStamp, FunctionPollerStamp, unconvertedRecordingsGe
     monitorSite(siteConfig) {
       const accuwareApi = AccuwareApiStamp(siteConfig);
 
-      const getRecordingsObject = this.setUpGetRecordingsObject(siteConfig, accuwareApi);
-      const getRecordings = getRecordingsObject.pollFunction.bind(getRecordingsObject);
+      this.setUpGetRecordingsObject(siteConfig, accuwareApi);
+      const getRecordings = this.getRecordingsObject.pollFunction.bind(this.getRecordingsObject);
 
       this.unconvertedRecordingsGetter.startGettingUnconvertedRecordings({
-        getRecordingsObject,
+        getRecordingsObject: this.getRecordingsObject,
         getRecordings,
         returnedRecordingsEventName: this.functionResultEventName,
         stopGettingRecordingsForThisSite: this.stopGettingRecordingsForThisSite.bind(this),
@@ -33,12 +33,12 @@ module.exports = (AccuwareApiStamp, FunctionPollerStamp, unconvertedRecordingsGe
         pollingIntervalInMilSecs: siteConfig.intervalPeriodInSeconds * 1000,
       };
 
-      const getRecordingsObject = FunctionPollerStamp(functionPollerConfig);
-      return getRecordingsObject;
+      this.getRecordingsObject = FunctionPollerStamp(functionPollerConfig);
     },
 
     stopGettingRecordingsForThisSite() {
-      console.log('STOP GETTING RECORDINGS');
+      this.getRecordingsObject.stopPollFunction();
+      delete this.getRecordingsObject;
       delete this.unconvertedRecordingsGetter;
     },
   },
