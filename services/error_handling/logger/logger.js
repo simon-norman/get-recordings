@@ -15,7 +15,7 @@ const logExceptionToRaven = (exception) => {
 const wrapperToHandleUnhandledExceptionsUsingRaven = Raven.context.bind(Raven);
 
 const logExceptionToConsole = (exception) => {
-  console.log(exception);
+  console.log(exception.stack);
 };
 
 const wrapperToHandleUnhandledExceptionsLocally = async (functionToWrap) => {

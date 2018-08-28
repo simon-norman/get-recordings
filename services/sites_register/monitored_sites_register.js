@@ -22,6 +22,7 @@ module.exports = (AccuwareApiStamp, FunctionPollerStamp, unconvertedRecordingsGe
         getRecordingsObject,
         getRecordings,
         returnedRecordingsEventName: this.functionResultEventName,
+        stopGettingRecordingsForThisSite: this.stopGettingRecordingsForThisSite.bind(this),
       });
     },
 
@@ -37,6 +38,7 @@ module.exports = (AccuwareApiStamp, FunctionPollerStamp, unconvertedRecordingsGe
     },
 
     stopGettingRecordingsForThisSite() {
+      console.log('STOP GETTING RECORDINGS');
       delete this.unconvertedRecordingsGetter;
     },
   },

@@ -134,11 +134,15 @@ describe('monitored_sites_register', function () {
         .to.equal(functionResultEventName);
     });
 
-    it('should remove the unconverted recordings getter when requested to stop getting recordings ', function () {
+    it('should pass the recordings getter a function to stop getting the recordings, which will delete the recordings getter', function () {
       expect(monitoredSitesRegister.unconvertedRecordingsGetter)
         .to.equal(mockUnconvertedRecordingsGetter);
 
-      monitoredSitesRegister.stopGettingRecordingsForThisSite();
+      monitoredSitesRegister.monitorSite(siteConfig);
+      const stopGettingRecordingsFunction
+        = startGettingUnconvertedRecordingsSpy.firstCall.args[0].stopGettingRecordingsForThisSite;
+
+      stopGettingRecordingsFunction();
 
       expect(monitoredSitesRegister.unconvertedRecordingsGetter).to.equal(undefined);
     });

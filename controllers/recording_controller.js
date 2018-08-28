@@ -15,7 +15,7 @@ module.exports = Recording => stampit({
         latitude: recording.latitude,
         spaceIds: recording.spaceIds,
       });
-
+      throw new Error('some error');
       return recordingModel.save();
     },
   },
