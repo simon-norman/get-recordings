@@ -15,19 +15,29 @@ module.exports = (AccuwareApiStamp, FunctionPollerStamp, unconvertedRecordingsGe
     monitorSite(siteConfig) {
       const accuwareApi = AccuwareApiStamp(siteConfig);
 
+      const getRecordingsObject = this.setUpGetRecordingsObject(siteConfig, accuwareApi);
+      const getRecordings = getRecordingsObject.pollFunction.bind(getRecordingsObject);
+
+      this.unconvertedRecordingsGetter.startGettingUnconvertedRecordings({
+        getRecordingsObject,
+        getRecordings,
+        returnedRecordingsEventName: this.functionResultEventName,
+      });
+    },
+
+    setUpGetRecordingsObject(siteConfig, accuwareApi) {
       const functionPollerConfig = {
         functionToPoll: accuwareApi.getDeviceRecordings.bind(accuwareApi),
         functionResultEventName: this.functionResultEventName,
         pollingIntervalInMilSecs: siteConfig.intervalPeriodInSeconds * 1000,
       };
 
-      const functionPoller = FunctionPollerStamp(functionPollerConfig);
+      const getRecordingsObject = FunctionPollerStamp(functionPollerConfig);
+      return getRecordingsObject;
+    },
 
-      unconvertedRecordingsGetter.startGettingUnconvertedRecordings(
-        functionPoller,
-        functionPoller.pollFunction.bind(functionPoller),
-        this.functionResultEventName,
-      );
+    stopGettingRecordingsForThisSite() {
+      delete this.unconvertedRecordingsGetter;
     },
   },
 });

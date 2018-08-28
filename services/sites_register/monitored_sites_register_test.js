@@ -78,6 +78,10 @@ describe('monitored_sites_register', function () {
   };
 
   before(() => {
+
+  });
+
+  beforeEach(() => {
     setUpDependenciesOfMonitoredSitesRegister();
 
     setUpMonitoredSitesRegister();
@@ -87,10 +91,6 @@ describe('monitored_sites_register', function () {
     };
 
     functionResultEventName = 'newrecordings';
-  });
-
-  beforeEach(() => {
-    startGettingUnconvertedRecordingsSpy.resetHistory();
   });
 
   describe('Register site to start getting recordings for that site', function () {
@@ -117,7 +117,7 @@ describe('monitored_sites_register', function () {
       monitoredSitesRegister.monitorSite(siteConfig);
 
       const pollFunctionPassedToMockRecordingsGetter
-        = startGettingUnconvertedRecordingsSpy.firstCall.args[1];
+        = startGettingUnconvertedRecordingsSpy.firstCall.args[0].getRecordings;
 
       const dataFromOriginalScopeOfPollFunction = pollFunctionPassedToMockRecordingsGetter();
       expect(dataFromOriginalScopeOfPollFunction).to.equal('somedata');
@@ -127,11 +127,20 @@ describe('monitored_sites_register', function () {
       monitoredSitesRegister.monitorSite(siteConfig);
 
       const mockFunctionPoller = mockFunctionPollerStamp();
-      expect(startGettingUnconvertedRecordingsSpy.firstCall.args[0])
+      expect(startGettingUnconvertedRecordingsSpy.firstCall.args[0].getRecordingsObject)
         .to.deep.equal(mockFunctionPoller);
 
-      expect(startGettingUnconvertedRecordingsSpy.firstCall.args[2])
+      expect(startGettingUnconvertedRecordingsSpy.firstCall.args[0].returnedRecordingsEventName)
         .to.equal(functionResultEventName);
+    });
+
+    it('should remove the unconverted recordings getter when requested to stop getting recordings ', function () {
+      expect(monitoredSitesRegister.unconvertedRecordingsGetter)
+        .to.equal(mockUnconvertedRecordingsGetter);
+
+      monitoredSitesRegister.stopGettingRecordingsForThisSite();
+
+      expect(monitoredSitesRegister.unconvertedRecordingsGetter).to.equal(undefined);
     });
 
     it('should instruct recordings getter to start getting recordings', function () {
