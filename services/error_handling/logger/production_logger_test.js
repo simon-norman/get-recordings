@@ -2,9 +2,9 @@
 const { expect } = require('chai');
 const Raven = require('raven');
 const sinon = require('sinon');
-const { logException } = require('./logger.js');
+const { logException } = require('./production_logger.js');
 
-describe('logger', () => {
+describe('production_logger', () => {
   const stubbedRavenCaptureException = sinon.stub(Raven, 'captureException');
 
   it('should log exceptions with Raven', async function () {

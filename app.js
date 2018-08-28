@@ -1,7 +1,7 @@
 
 const { wireUpApp } = require('./dependency_injection/app_wiring');
 const { getConfigForEnvironment } = require('./config/config.js');
-const { wrapperToHandleUnhandledExceptions } = require('./services/error_handling/logger/logger.js');
+const { wrapperToHandleUnhandledExceptions } = require('./services/error_handling/logger/development_logger.js');
 const mongoose = require('mongoose');
 
 let config;
