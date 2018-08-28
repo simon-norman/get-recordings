@@ -12,6 +12,7 @@ module.exports = {
       "jest": true
     },
     "rules": {
+      "global-require": 0,
       "linebreak-style": ["error", "windows"],
       "no-unused-vars": ["error", { "argsIgnorePattern": "next" }],
       "import/no-extraneous-dependencies": [2, { devDependencies: true }],

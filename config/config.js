@@ -23,7 +23,6 @@ const config = {
         areas: 'yes',
       },
     },
-    loggerModuleFilename: 'development_logger_test.js',
     trackingDatabase: {
       uri: 'mongodb://localhost:27017/tracking_app_dev',
     },
@@ -40,7 +39,6 @@ const config = {
         areas: 'yes',
       },
     },
-    loggerModuleFilename: 'development_logger_test.js',
     trackingDatabase: {
       uri: process.env.MONGODB_URI,
     },
@@ -57,7 +55,6 @@ const config = {
         areas: 'yes',
       },
     },
-    loggerModuleFilename: 'development_logger_test.js',
     trackingDatabase: {
       uri: process.env.MONGODB_URI,
     },
@@ -74,7 +71,6 @@ const config = {
         areas: 'yes',
       },
     },
-    loggerModuleFilename: 'production_logger_test.js',
     trackingDatabase: {
       uri: process.env.MONGODB_URI,
     },
