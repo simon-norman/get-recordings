@@ -26,6 +26,9 @@ const config = {
     trackingDatabase: {
       uri: 'mongodb://localhost:27017/tracking_app_dev',
     },
+    webServer: {
+      port: 3000,
+    },
   },
 
   test: {
@@ -41,6 +44,9 @@ const config = {
     },
     trackingDatabase: {
       uri: process.env.MONGODB_URI,
+    },
+    webServer: {
+      port: process.env.PORT,
     },
   },
 
@@ -58,6 +64,9 @@ const config = {
     trackingDatabase: {
       uri: process.env.MONGODB_URI,
     },
+    webServer: {
+      port: process.env.PORT,
+    },
   },
 
   production: {
@@ -73,6 +82,9 @@ const config = {
     },
     trackingDatabase: {
       uri: process.env.MONGODB_URI,
+    },
+    webServer: {
+      port: process.env.PORT,
     },
   },
 };
