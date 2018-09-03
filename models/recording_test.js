@@ -43,7 +43,7 @@ describe('recording', () => {
 
   after(async () => {
     await ensureRecordingCollectionEmpty();
-    mongoose.connection.close();
+    await mongoose.connection.close();
   });
 
   it('should save recording when validation is successful', async function () {

@@ -186,6 +186,21 @@
     {
         "type": "node",
         "request": "launch",
+        "name": "device info tests",
+        "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+        "args": [
+            "-u",
+            "tdd",
+            "--timeout",
+            "999999",
+            "--colors",
+            "./{,!(node_modules)/**/}*device_info_test.js"
+        ],
+        "internalConsoleOptions": "openOnSessionStart"
+    },
+    {
+        "type": "node",
+        "request": "launch",
         "name": "Config tests",
         "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
         "args": [

@@ -5,6 +5,8 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
+    "start-test-heroku": "heroku ps:scale web=1 -a test-get-recordings",
+    "stop-test-heroku": "heroku ps:scale web=0 -a test-get-recordings",
     "test": "nyc mocha --timeout=10000 \"**/*_test.js\"",
     "dev": "node app",
     "load-device-category-lookup": "node ./app_admin_scripts/device_category_lookup_loader.js"

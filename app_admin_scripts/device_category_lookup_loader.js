@@ -3,7 +3,6 @@ const JsonToMongoWriterStamp = require('./json_to_mongo_writer');
 const csvToJson = require('csvtojson');
 const path = require('path');
 const mongoose = require('mongoose');
-const { getConfigForEnvironment } = require('../config/config.js');
 
 let deviceCategoryLookupAsJson;
 let jsonToMongoConfig;
@@ -34,7 +33,8 @@ const setUpJsonToMongo = () => {
 };
 
 const getTrackingDatabaseConnection = (environment) => {
-  const trackingDatabaseUri = getConfigForEnvironment(environment).trackingDatabase.uri;
+  const trackingDatabaseName = `${environment}_TRACKING_DATABASE_URI`;
+  const trackingDatabaseUri = process.env[trackingDatabaseName];
 
   return mongoose.createConnection(trackingDatabaseUri, { useNewUrlParser: true });
 };
@@ -73,7 +73,7 @@ const loadDeviceCategoryLookupsIntoAllDbs = async () => {
 
   setUpJsonToMongo();
 
-  const environments = ['development'];
+  const environments = ['development', 'test'];
   const promisesToLoadLookupsIntoAllDbs = [];
 
   for (const environment of environments) {
