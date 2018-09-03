@@ -40,14 +40,9 @@ module.exports = (
       try {
         const { estimatedDeviceCategory }
           = await this.deviceInfoController.getDeviceInfo(recording.objectId);
+        recording.estimatedDeviceCategory = estimatedDeviceCategory;
 
-        const recordingWithDeviceInfo = Object.assign(
-          {},
-          recording,
-        );
-        recordingWithDeviceInfo.estimatedDeviceCategory = estimatedDeviceCategory;
-
-        return recordingWithDeviceInfo;
+        return recording;
       } catch (error) {
         return recording;
       }

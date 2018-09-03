@@ -17,6 +17,7 @@ module.exports = {
       "no-unused-vars": ["error", { "argsIgnorePattern": "next" }],
       "import/no-extraneous-dependencies": [2, { devDependencies: true }],
       "chai-friendly/no-unused-expressions": 2,
+      "no-param-reassign": [2, { "props": false }],      
       "no-unused-expressions": 0,
       "no-underscore-dangle": 0,
       "prefer-arrow-callback": 0,
