@@ -43,7 +43,7 @@ const config = {
       },
     },
     trackingDatabase: {
-      uri: process.env.MONGODB_URI,
+      uri: process.env.TRACKING_DATABASE_URI,
     },
     webServer: {
       port: process.env.PORT,
@@ -62,7 +62,7 @@ const config = {
       },
     },
     trackingDatabase: {
-      uri: process.env.MONGODB_URI,
+      uri: process.env.TRACKING_DATABASE_URI,
     },
     webServer: {
       port: process.env.PORT,
@@ -81,7 +81,7 @@ const config = {
       },
     },
     trackingDatabase: {
-      uri: process.env.MONGODB_URI,
+      uri: process.env.TRACKING_DATABASE_URI,
     },
     webServer: {
       port: process.env.PORT,
