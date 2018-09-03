@@ -1,21 +1,29 @@
 const stampit = require('stampit');
 
-module.exports = (InvalidLocationInRecordingError, InvalidTimestampInRecordingError) => stampit({
+module.exports = (
+  InvalidLocationInRecordingError,
+  InvalidTimestampInRecordingError,
+  deviceInfoController,
+) => stampit({
   props: {
     InvalidLocationInRecordingError,
     InvalidTimestampInRecordingError,
+    deviceInfoController,
   },
 
   methods: {
-    convertRecordingForUsageAnalysis(accuwareRecording, timestampRecorded) {
+    async convertRecordingForUsageAnalysis(accuwareRecording, timestampRecorded) {
       this.checkRecordingValid(accuwareRecording, timestampRecorded);
-      return {
+
+      const convertedRecording = {
         objectId: accuwareRecording.mac,
         longitude: accuwareRecording.loc.lng,
         latitude: accuwareRecording.loc.lat,
         spaceIds: accuwareRecording.areas,
         timestampRecorded,
       };
+
+      return this.tryToAddDeviceInfoToRecording(convertedRecording);
     },
 
     checkRecordingValid(accuwareRecording, timestampRecorded) {
@@ -26,6 +34,23 @@ module.exports = (InvalidLocationInRecordingError, InvalidTimestampInRecordingEr
         throw new this.InvalidTimestampInRecordingError('Invalid timestamp provided for recording');
       }
       return true;
+    },
+
+    async tryToAddDeviceInfoToRecording(recording) {
+      try {
+        const { estimatedDeviceCategory }
+          = await this.deviceInfoController.getDeviceInfo(recording.objectId);
+
+        const recordingWithDeviceInfo = Object.assign(
+          {},
+          recording,
+        );
+        recordingWithDeviceInfo.estimatedDeviceCategory = estimatedDeviceCategory;
+
+        return recordingWithDeviceInfo;
+      } catch (error) {
+        return recording;
+      }
     },
   },
 });

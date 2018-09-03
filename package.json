@@ -23,6 +23,7 @@
   "homepage": "https://github.com/SpacelabUK/track-api#readme",
   "devDependencies": {
     "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
     "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-chai-friendly": "^0.4.1",
