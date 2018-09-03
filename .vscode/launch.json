@@ -216,6 +216,43 @@
     {
         "type": "node",
         "request": "launch",
+        "name": "csv files to json converter test",
+        "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+        "args": [
+            "-u",
+            "tdd",
+            "--timeout",
+            "999999",
+            "--colors",
+            "./{,!(node_modules)/**/}*csv_files_to_json_converter_test.js"
+        ],
+        "internalConsoleOptions": "openOnSessionStart"
+    },
+    {
+        "type": "node",
+        "request": "launch",
+        "name": "json to mongo writer test",
+        "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+        "args": [
+            "-u",
+            "tdd",
+            "--timeout",
+            "999999",
+            "--colors",
+            "./{,!(node_modules)/**/}*json_to_mongo_writer_test.js"
+        ],
+        "internalConsoleOptions": "openOnSessionStart"
+    },
+    {
+        "type": "node",
+        "request": "launch",
+        "name": "Load device category lookup",
+        "env": {"NODE_ENV": "development"},
+        "program": "${workspaceRoot}/app_admin_scripts/device_category_lookup_loader.js"
+    },
+    {
+        "type": "node",
+        "request": "launch",
         "name": "Launch Program",
         "env": {"NODE_ENV": "development"},
         "program": "${workspaceRoot}/app.js"
