@@ -14,8 +14,10 @@ const RecordingsWriterForUsageAnalysisStampFactory = require('../services/record
 const UnconvertedRecordingsGetterStampFactory = require('../services/recordings_retrieval/unconverted_recordings_getter');
 const AccuwareRecordingConverterStampFactory = require('../services/recordings_conversion_and_storage/accuware_recording_converter');
 const MonitoredSitesRegisterStampFactory = require('../services/sites_register/monitored_sites_register');
+const DeviceInfo = require('../models/device_info');
+const DeviceInfoControllerStampFactory = require('../controllers/device_info_controller');
 const Recording = require('../models/recording');
-const RecordingControllerStampFactory = require('../controllers//recording_controller');
+const RecordingControllerStampFactory = require('../controllers/recording_controller');
 
 let diContainer;
 
@@ -48,6 +50,13 @@ const registerRecordingController = () => {
   diContainer.registerDependencyFromFactory('RecordingControllerStamp', RecordingControllerStampFactory);
   const RecordingControllerStamp = diContainer.getDependency('RecordingControllerStamp');
   diContainer.registerDependency('recordingController', RecordingControllerStamp());
+};
+
+const registerDeviceInfoController = () => {
+  diContainer.registerDependency('DeviceInfo', DeviceInfo);
+  diContainer.registerDependencyFromFactory('DeviceInfoControllerStamp', DeviceInfoControllerStampFactory);
+  const DeviceInfoControllerStamp = diContainer.getDependency('DeviceInfoControllerStamp');
+  diContainer.registerDependency('deviceInfoController', DeviceInfoControllerStamp());
 };
 
 const registerRecordingsWriterForUsageAnalysis = () => {
@@ -83,6 +92,7 @@ const wireUpApp = () => {
   diContainer.registerDependency('EventEmittableStamp', EventEmittableStamp);
   registerFunctionPoller();
 
+  registerDeviceInfoController();
   registerRecordingConverter();
   registerRecordingController();
   registerRecordingsWriterForUsageAnalysis();

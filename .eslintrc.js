@@ -21,6 +21,13 @@ module.exports = {
       "no-unused-expressions": 0,
       "no-underscore-dangle": 0,
       "prefer-arrow-callback": 0,
+      "comma-dangle": ["error", {
+        "arrays": "always-multiline",
+        "objects": "always-multiline",
+        "imports": "always-multiline",
+        "exports": "always-multiline",
+        "functions": "ignore"
+      }],
       "prefer-rest-params": 0,
       "no-restricted-globals": 0,
       "no-continue": 0,

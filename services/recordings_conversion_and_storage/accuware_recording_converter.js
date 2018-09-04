@@ -4,7 +4,7 @@ module.exports = (
   InvalidLocationInRecordingError,
   InvalidTimestampInRecordingError,
   deviceInfoController,
-  logException,
+  logException
 ) => stampit({
   props: {
     InvalidLocationInRecordingError,
@@ -39,16 +39,17 @@ module.exports = (
     },
 
     async tryToAddDeviceInfoToRecording(recording) {
-      try {
-        const { estimatedDeviceCategory }
-          = await this.deviceInfoController.getDeviceInfo(recording.objectId);
-        recording.estimatedDeviceCategory = estimatedDeviceCategory;
+      const deviceOui = recording.objectId.substr(0, 6);
+      const deviceInfo
+          = await this.deviceInfoController.getDeviceInfo(deviceOui);
 
-        return recording;
-      } catch (error) {
-        this.logException(error);
+      if (!deviceInfo) {
+        this.logException(new Error('No device info found for this device oui'));
         return recording;
       }
+
+      recording.estimatedDeviceCategory = deviceInfo.estimatedDeviceCategory;
+      return recording;
     },
   },
 });

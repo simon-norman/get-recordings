@@ -82,20 +82,22 @@ describe('accuware_recording_converter', () => {
       .to.equal(timestampRecorded);
   });
 
-  it('should decorate recording with device info', async function () {
+  it('should query device info using oui and decorate recording with device info', async function () {
     await convertRecording();
+
+    const deviceOui = mockAccuwareRecording.mac.substr(0, 6);
+    expect(stubbedGetDeviceInfo.calledOnceWithExactly(deviceOui)).to.equal(true);
 
     expect(convertedRecording.estimatedDeviceCategory)
       .to.deep.equal(mockDeviceInfo.estimatedDeviceCategory);
   });
 
   it('should log exception when device info cannot be found', async function () {
-    const deviceInfoNotFound = new Error('No device info found');
-    stubbedGetDeviceInfo.throws(deviceInfoNotFound);
+    stubbedGetDeviceInfo.returns(undefined);
     await convertRecording();
 
-    expect(logExceptionSpy.calledOnceWithExactly(deviceInfoNotFound))
-      .to.equal(true);
+    expect(logExceptionSpy.firstCall.args[0])
+      .to.be.an.instanceOf(Error);
   });
 
   it('should throw InvalidLocationInRecordingError exception if recording location not provided', async function () {

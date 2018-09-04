@@ -29,8 +29,8 @@ module.exports = (recordingController, InvalidLocationInRecordingError, logExcep
       }
     },
 
-    saveSingleRecordingInUsageAnalysisFormat(recording, timestampRecorded) {
-      const convertedRecording = this.recordingConverter
+    async saveSingleRecordingInUsageAnalysisFormat(recording, timestampRecorded) {
+      const convertedRecording = await this.recordingConverter
         .convertRecordingForUsageAnalysis(recording, timestampRecorded);
 
       recordingController.saveSingleRecording(convertedRecording);
