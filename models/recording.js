@@ -7,6 +7,7 @@ const RecordingSchema = new Schema({
   timestampRecorded: { type: Date, required: true },
   longitude: { type: Number, required: false },
   latitude: { type: Number, required: false },
+  estimatedDeviceCategory: { type: String, required: false },
   spaceIds: [
     { type: String, required: false },
   ],

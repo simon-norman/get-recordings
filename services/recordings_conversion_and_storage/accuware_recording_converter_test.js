@@ -2,6 +2,7 @@
 
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
+const sinon = require('sinon');
 const AccuwareRecordingConverterStampFactory = require('./accuware_recording_converter');
 const InvalidLocationInRecordingError = require('../error_handling/errors/InvalidLocationInRecordingError.js');
 const InvalidTimestampInRecordingError = require('../error_handling/errors/InvalidTimestampInRecordingError.js');
@@ -12,24 +13,32 @@ const { expect } = chai;
 describe('accuware_recording_converter', () => {
   let mockAccuwareRecording;
   let timestampRecorded;
+  let logExceptionSpy;
   let AccuwareRecordingConverterStamp;
   let accuwareRecordingConverter;
   let mockDeviceInfo;
+  let stubbedGetDeviceInfo;
   let mockDeviceInfoController;
   let convertedRecording;
 
   const setUpMockDeviceInfoController = () => {
     mockDeviceInfo = { estimatedDeviceCategory: 'Mobile phone' };
+    stubbedGetDeviceInfo = sinon.stub();
+    stubbedGetDeviceInfo.returns(mockDeviceInfo);
+
     mockDeviceInfoController = {
-      getDeviceInfo: () => mockDeviceInfo,
+      getDeviceInfo: stubbedGetDeviceInfo,
     };
   };
 
   const setUpAccuwareRecordingConverter = () => {
+    logExceptionSpy = sinon.spy();
+
     AccuwareRecordingConverterStamp = AccuwareRecordingConverterStampFactory(
       InvalidLocationInRecordingError,
       InvalidTimestampInRecordingError,
       mockDeviceInfoController,
+      logExceptionSpy,
     );
 
     accuwareRecordingConverter = AccuwareRecordingConverterStamp();
@@ -78,6 +87,15 @@ describe('accuware_recording_converter', () => {
 
     expect(convertedRecording.estimatedDeviceCategory)
       .to.deep.equal(mockDeviceInfo.estimatedDeviceCategory);
+  });
+
+  it('should log exception when device info cannot be found', async function () {
+    const deviceInfoNotFound = new Error('No device info found');
+    stubbedGetDeviceInfo.throws(deviceInfoNotFound);
+    await convertRecording();
+
+    expect(logExceptionSpy.calledOnceWithExactly(deviceInfoNotFound))
+      .to.equal(true);
   });
 
   it('should throw InvalidLocationInRecordingError exception if recording location not provided', async function () {

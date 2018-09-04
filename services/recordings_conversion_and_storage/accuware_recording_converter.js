@@ -4,11 +4,13 @@ module.exports = (
   InvalidLocationInRecordingError,
   InvalidTimestampInRecordingError,
   deviceInfoController,
+  logException,
 ) => stampit({
   props: {
     InvalidLocationInRecordingError,
     InvalidTimestampInRecordingError,
     deviceInfoController,
+    logException,
   },
 
   methods: {
@@ -44,6 +46,7 @@ module.exports = (
 
         return recording;
       } catch (error) {
+        this.logException(error);
         return recording;
       }
     },

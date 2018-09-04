@@ -37,6 +37,7 @@ describe('recording', () => {
       timestampRecorded: Date.now(),
       longitude: 20,
       latitude: 20,
+      estimatedDeviceCategory: 'Mobile phone',
       spaceIds: ['3', '4'],
     };
   });
@@ -54,6 +55,7 @@ describe('recording', () => {
     expect(savedRecording.timestampRecorded.getTime()).to.equal(mockRecording.timestampRecorded);
     expect(savedRecording.longitude).to.equal(mockRecording.longitude);
     expect(savedRecording.latitude).to.equal(mockRecording.latitude);
+    expect(savedRecording.estimatedDeviceCategory).to.equal(mockRecording.estimatedDeviceCategory);
     expect(savedRecording.spaceIds[0]).to.equal(mockRecording.spaceIds[0]);
     expect(savedRecording.spaceIds[1]).to.equal(mockRecording.spaceIds[1]);
   });

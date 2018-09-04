@@ -8,13 +8,7 @@ module.exports = Recording => stampit({
 
   methods: {
     saveSingleRecording(recording) {
-      const recordingModel = new this.Recording({
-        objectId: recording.objectId,
-        timestampRecorded: recording.timestampRecorded,
-        longitude: recording.longitude,
-        latitude: recording.latitude,
-        spaceIds: recording.spaceIds,
-      });
+      const recordingModel = new this.Recording(recording);
       return recordingModel.save();
     },
   },
