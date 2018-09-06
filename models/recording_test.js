@@ -26,7 +26,7 @@ describe('recording', () => {
 
   before(async () => {
     config = getConfigForEnvironment(process.env.NODE_ENV);
-    await mongoose.connect(config.trackingDatabase.uri, { useNewUrlParser: true });
+    await mongoose.connect(config.recordingDatabase.uri, { useNewUrlParser: true });
   });
 
   beforeEach(async () => {

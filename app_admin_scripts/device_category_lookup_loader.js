@@ -32,19 +32,19 @@ const setUpJsonToMongo = () => {
   };
 };
 
-const getTrackingDatabaseConnection = (environment) => {
-  const trackingDatabaseName = `${environment}_TRACKING_DATABASE_URI`;
-  const trackingDatabaseUri = process.env[trackingDatabaseName];
+const getrecordingDatabaseConnection = (environment) => {
+  const recordingDatabaseName = `${environment}_RECORDING_DATABASE_URI`;
+  const recordingDatabaseUri = process.env[recordingDatabaseName];
 
-  return mongoose.createConnection(trackingDatabaseUri, { useNewUrlParser: true });
+  return mongoose.createConnection(recordingDatabaseUri, { useNewUrlParser: true });
 };
 
 const loadDeviceCategoryLookupIntoDb = (environment) => {
-  const trackingDatabaseConnectionPromise = getTrackingDatabaseConnection(environment);
+  const recordingDatabaseConnectionPromise = getrecordingDatabaseConnection(environment);
 
   const promiseToLoadLookupIntoDb
-    = Promise.resolve(trackingDatabaseConnectionPromise.then((trackingDatabaseConnection) => {
-      jsonToMongoConfig.mongooseConnection = trackingDatabaseConnection;
+    = Promise.resolve(recordingDatabaseConnectionPromise.then((recordingDatabaseConnection) => {
+      jsonToMongoConfig.mongooseConnection = recordingDatabaseConnection;
 
       return jsonToMongoWriter.writeJsonToMongo(jsonToMongoConfig);
     }));

@@ -23,7 +23,7 @@ const config = {
         areas: 'yes',
       },
     },
-    trackingDatabase: {
+    recordingDatabase: {
       uri: 'mongodb://localhost:27017/tracking_app_dev',
     },
     webServer: {
@@ -42,8 +42,8 @@ const config = {
         areas: 'yes',
       },
     },
-    trackingDatabase: {
-      uri: process.env.TRACKING_DATABASE_URI,
+    recordingDatabase: {
+      uri: process.env.RECORDING_DATABASE_URI,
     },
     webServer: {
       port: process.env.PORT,
@@ -61,8 +61,8 @@ const config = {
         areas: 'yes',
       },
     },
-    trackingDatabase: {
-      uri: process.env.TRACKING_DATABASE_URI,
+    recordingDatabase: {
+      uri: process.env.RECORDING_DATABASE_URI,
     },
     webServer: {
       port: process.env.PORT,
@@ -80,8 +80,8 @@ const config = {
         areas: 'yes',
       },
     },
-    trackingDatabase: {
-      uri: process.env.TRACKING_DATABASE_URI,
+    recordingDatabase: {
+      uri: process.env.RECORDING_DATABASE_URI,
     },
     webServer: {
       port: process.env.PORT,
