@@ -15,7 +15,7 @@ const setUpWebServer = () => {
 };
 
 const connectToDatabase = () =>
-  mongoose.connect(config.trackingDatabase.uri, { useNewUrlParser: true });
+  mongoose.connect(config.recordingDatabase.uri, { useNewUrlParser: true });
 
 const startApp = async () => {
   config = getConfigForEnvironment(process.env.NODE_ENV);
