@@ -11,7 +11,7 @@ let jsonToMongoWriter;
 const convertDeviceCategoryLookupCsvToJson = async () => {
   const convertCsvFilesToJson = csvFilesToJsonConverterStamp();
 
-  const deviceCategoryLookupFilepath = path.join(__dirname, './oui.csv');
+  const deviceCategoryLookupFilepath = path.join(__dirname, './oui_to_device_category_lookup.csv');
 
   const convertCsvFilesToJsonConfig = {
     filepaths: [deviceCategoryLookupFilepath],
@@ -33,7 +33,7 @@ const setUpJsonToMongo = () => {
 };
 
 const getrecordingDatabaseConnection = (environment) => {
-  const recordingDatabaseName = `${environment}_RECORDING_DATABASE_URI`;
+  const recordingDatabaseName = `${environment}_TRACKING_DATABASE_URI`;
   const recordingDatabaseUri = process.env[recordingDatabaseName];
 
   return mongoose.createConnection(recordingDatabaseUri, { useNewUrlParser: true });
