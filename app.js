@@ -1,7 +1,7 @@
 
 const { wireUpApp } = require('./dependency_injection/app_wiring');
 const { getConfigForEnvironment } = require('./config/config.js');
-const { wrapperToHandleUnhandledExceptions } = require('./services/error_handling/logger/logger.js');
+const LoggerFactory = require('./services/error_handling/logger/logger.js');
 const mongoose = require('mongoose');
 const express = require('express');
 
@@ -34,7 +34,7 @@ const startApp = async () => {
   monitoredSitesRegister.monitorSite(config.accuwareApi.getDeviceRecordings);
 };
 
-
+const wrapperToHandleUnhandledExceptions = LoggerFactory(process.env.NODE_ENV);
 wrapperToHandleUnhandledExceptions(() => {
   startApp();
 });

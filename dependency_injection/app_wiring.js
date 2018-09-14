@@ -3,9 +3,9 @@ const DependencyNotFoundError = require('../services/error_handling/errors/Depen
 const DependencyAlreadyRegisteredError = require('../services/error_handling/errors/DependencyAlreadyRegisteredError');
 const DiContainerStampFactory = require('./di_container');
 const { getConfigForEnvironment } = require('../config/config.js');
-const InvalidLocationInRecordingError = require('../services/error_handling/errors/InvalidLocationInRecordingError');
+const RecoverableInvalidRecordingError = require('../services/error_handling/errors/RecoverableInvalidRecordingError');
 const InvalidTimestampInRecordingError = require('../services/error_handling/errors/InvalidTimestampInRecordingError.js');
-const { logException } = require('../services/error_handling/logger/logger.js');
+const LoggerFactory = require('../services/error_handling/logger/logger.js');
 const AccuwareApiStampFactory = require('../services/recordings_retrieval/accuware_api');
 const BaseApiStampFactory = require('../helpers/base_api/base_api');
 const EventEmittableStamp = require('../helpers/event_generation/event_emittable_stamp');
@@ -22,7 +22,7 @@ const RecordingControllerStampFactory = require('../controllers/recording_contro
 let diContainer;
 
 const registerErrors = () => {
-  diContainer.registerDependency('InvalidLocationInRecordingError', InvalidLocationInRecordingError);
+  diContainer.registerDependency('RecoverableInvalidRecordingError', RecoverableInvalidRecordingError);
   diContainer.registerDependency('InvalidTimestampInRecordingError', InvalidTimestampInRecordingError);
 };
 
@@ -86,6 +86,7 @@ const wireUpApp = () => {
   diContainer = DiContainerStamp();
 
   registerErrors();
+  const logException = LoggerFactory(process.env.NODE_ENV);
   diContainer.registerDependency('logException', logException);
 
   registerAccuwareApi();

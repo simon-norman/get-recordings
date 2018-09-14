@@ -42,6 +42,9 @@ describe('monitored_sites_register', function () {
         pollFunction() {
           return this.dataToTestPollFunctionBoundToThisScope;
         },
+
+        stopPollFunction() {
+        },
       },
     });
   };
