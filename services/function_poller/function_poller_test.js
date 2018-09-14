@@ -38,18 +38,25 @@ describe('function_poller', function () {
     functionPoller = FunctionPollerStamp(functionPollerConfig);
   });
 
+  afterEach(() => {
+    clearInterval(functionPoller.intervalId);
+  });
+
   describe('Register function with poller, which sends events with result of function', function () {
     it('should send events with the result of the function every X seconds, where X is the polling interval specified', async function () {
       const resultsFromFunction = [];
-      functionPoller.on(functionPollerConfig.functionResultEventName, (functionResult) => {
+      const callbackWhenEventTrigger = (functionResult) => {
         resultsFromFunction.push(functionResult);
-      });
+      };
+      functionPoller.on(functionPollerConfig.functionResultEventName, callbackWhenEventTrigger);
 
       functionPoller.pollFunction();
 
       await setPromisifiedTimeout(250);
       expect(resultsFromFunction.length).to.equal(2);
       expect(resultsFromFunction[0]).to.equal(dataReturnedByFunction);
+      functionPoller
+        .removeListener(functionPollerConfig.functionResultEventName, callbackWhenEventTrigger);
     });
   });
 
