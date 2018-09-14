@@ -1,7 +1,11 @@
-const { expect } = require('chai');
+const chai = require('chai');
 const sinon = require('sinon');
-const InvalidLocationInRecordingError = require('../error_handling/errors/InvalidLocationInRecordingError');
+const chaiAsPromised = require('chai-as-promised');
+const RecoverableInvalidRecordingError = require('../error_handling/errors/RecoverableInvalidRecordingError');
 const RecordingsWriterForUsageAnalysisStampFactory = require('./recordings_writer_for_usage_analysis');
+
+chai.use(chaiAsPromised);
+const { expect } = chai;
 
 
 describe('recordings_writer_for_usage_analysis', function () {
@@ -37,7 +41,7 @@ describe('recordings_writer_for_usage_analysis', function () {
   const setUpRecordingsWriterForUsageAnalysis = () => {
     RecordingsWriterForUsageAnalysisStamp = RecordingsWriterForUsageAnalysisStampFactory(
       mockRecordingController,
-      InvalidLocationInRecordingError,
+      RecoverableInvalidRecordingError,
       stubbedLogException,
     );
 
@@ -58,8 +62,8 @@ describe('recordings_writer_for_usage_analysis', function () {
   });
 
   describe('Loop through recordings and convert and save each one for usage analysis', function () {
-    it('should pass a group of recordings to be converted for usage analysis', function () {
-      recordingsWriterForUsageAnalysis
+    it('should pass a group of recordings to be converted for usage analysis', async function () {
+      await recordingsWriterForUsageAnalysis
         .saveRecordingsInUsageAnalysisFormat(mockRecordings, mockTimestamp);
 
       expect(stubbedConvertRecordingForUsageAnalysis.firstCall.args)
@@ -69,8 +73,8 @@ describe('recordings_writer_for_usage_analysis', function () {
         .to.deep.equal([mockRecordings[1], mockTimestamp]);
     });
 
-    it('should pass a group of converted recordings to be saved', function () {
-      recordingsWriterForUsageAnalysis
+    it('should pass a group of converted recordings to be saved', async function () {
+      await recordingsWriterForUsageAnalysis
         .saveRecordingsInUsageAnalysisFormat(mockRecordings, mockTimestamp);
 
       expect(stubbedSaveSingleRecording.firstCall.args[0])
@@ -80,29 +84,26 @@ describe('recordings_writer_for_usage_analysis', function () {
         .to.equal(mockConvertedRecording);
     });
 
-    it('should move onto converting & saving the next recording if it catches an InvalidLocationInRecording, logging the exception', function () {
-      const invalidLocationInRecordingError = new InvalidLocationInRecordingError();
-      stubbedConvertRecordingForUsageAnalysis.throws(invalidLocationInRecordingError);
+    it('should move onto converting & saving the next recording if it catches an RecoverableInvalidRecordingError, logging the exception', async function () {
+      const recoverableInvalidRecordingError = new RecoverableInvalidRecordingError();
+      stubbedConvertRecordingForUsageAnalysis.throws(recoverableInvalidRecordingError);
 
-      recordingsWriterForUsageAnalysis
+      await recordingsWriterForUsageAnalysis
         .saveRecordingsInUsageAnalysisFormat(mockRecordings, mockTimestamp);
 
       expect(stubbedConvertRecordingForUsageAnalysis.secondCall.args)
         .to.deep.equal([mockRecordings[1], mockTimestamp]);
 
       const exceptionPassedToStubbedLogException = stubbedLogException.firstCall.args[0];
-      expect(exceptionPassedToStubbedLogException).to.equal(invalidLocationInRecordingError);
+      expect(exceptionPassedToStubbedLogException).to.equal(recoverableInvalidRecordingError);
     });
 
-    it('should throw error if any other error encounterd', function () {
+    it('should throw error if any other error encounterd', async function () {
       stubbedConvertRecordingForUsageAnalysis.throws();
 
-      const wrappedSaveRecordingsInUsageAnalysisFormat = () => {
-        recordingsWriterForUsageAnalysis
-          .saveRecordingsInUsageAnalysisFormat(mockRecordings, mockTimestamp);
-      };
-
-      expect(wrappedSaveRecordingsInUsageAnalysisFormat).throws();
+      return expect(recordingsWriterForUsageAnalysis
+        .saveRecordingsInUsageAnalysisFormat(mockRecordings, mockTimestamp))
+        .to.be.rejected;
     });
   });
 });

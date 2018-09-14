@@ -1,51 +1,55 @@
 const stampit = require('stampit');
 
 module.exports = (
-  InvalidLocationInRecordingError,
+  RecoverableInvalidRecordingError,
   InvalidTimestampInRecordingError,
   deviceInfoController,
-  logException
 ) => stampit({
   props: {
-    InvalidLocationInRecordingError,
+    RecoverableInvalidRecordingError,
     InvalidTimestampInRecordingError,
     deviceInfoController,
-    logException,
   },
 
   methods: {
     async convertRecordingForUsageAnalysis(accuwareRecording, timestampRecorded) {
-      this.checkRecordingValid(accuwareRecording, timestampRecorded);
+      const recordingWithDeviceInfo = await this.addDeviceInfoToRecording(accuwareRecording);
 
-      const convertedRecording = {
+      this.checkRecordingValid(recordingWithDeviceInfo, timestampRecorded);
+
+      return {
         objectId: accuwareRecording.mac,
+        estimatedDeviceCategory: recordingWithDeviceInfo.estimatedDeviceCategory,
         longitude: accuwareRecording.loc.lng,
         latitude: accuwareRecording.loc.lat,
         spaceIds: accuwareRecording.areas,
         timestampRecorded,
       };
-
-      return this.tryToAddDeviceInfoToRecording(convertedRecording);
     },
 
     checkRecordingValid(accuwareRecording, timestampRecorded) {
-      if (!accuwareRecording.loc || !accuwareRecording.loc.lng || !accuwareRecording.loc.lat) {
-        throw new this.InvalidLocationInRecordingError('Recording location not provided');
+      if (accuwareRecording.estimatedDeviceCategory !== 'Mobile phone') {
+        throw new this.RecoverableInvalidRecordingError('Recording is not from a mobile device');
       }
+
+      if (!accuwareRecording.loc || !accuwareRecording.loc.lng || !accuwareRecording.loc.lat) {
+        throw new this.RecoverableInvalidRecordingError('Recording location not provided');
+      }
+
       if (!timestampRecorded || isNaN(timestampRecorded)) {
         throw new this.InvalidTimestampInRecordingError('Invalid timestamp provided for recording');
       }
+
       return true;
     },
 
-    async tryToAddDeviceInfoToRecording(recording) {
-      const deviceOui = recording.objectId.substr(0, 6);
+    async addDeviceInfoToRecording(recording) {
+      const deviceOui = recording.mac.substr(0, 6);
       const deviceInfo
           = await this.deviceInfoController.getDeviceInfo(deviceOui);
 
       if (!deviceInfo) {
-        this.logException(new Error('No device info found for this device oui'));
-        return recording;
+        throw new this.RecoverableInvalidRecordingError('No device info found for this device oui');
       }
 
       recording.estimatedDeviceCategory = deviceInfo.estimatedDeviceCategory;

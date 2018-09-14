@@ -4,8 +4,8 @@ const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const sinon = require('sinon');
 const AccuwareRecordingConverterStampFactory = require('./accuware_recording_converter');
-const InvalidLocationInRecordingError = require('../error_handling/errors/InvalidLocationInRecordingError.js');
 const InvalidTimestampInRecordingError = require('../error_handling/errors/InvalidTimestampInRecordingError.js');
+const RecoverableInvalidRecordingError = require('../error_handling/errors/RecoverableInvalidRecordingError');
 
 chai.use(chaiAsPromised);
 const { expect } = chai;
@@ -13,7 +13,6 @@ const { expect } = chai;
 describe('accuware_recording_converter', () => {
   let mockAccuwareRecording;
   let timestampRecorded;
-  let logExceptionSpy;
   let AccuwareRecordingConverterStamp;
   let accuwareRecordingConverter;
   let mockDeviceInfo;
@@ -32,13 +31,10 @@ describe('accuware_recording_converter', () => {
   };
 
   const setUpAccuwareRecordingConverter = () => {
-    logExceptionSpy = sinon.spy();
-
     AccuwareRecordingConverterStamp = AccuwareRecordingConverterStampFactory(
-      InvalidLocationInRecordingError,
+      RecoverableInvalidRecordingError,
       InvalidTimestampInRecordingError,
       mockDeviceInfoController,
-      logExceptionSpy,
     );
 
     accuwareRecordingConverter = AccuwareRecordingConverterStamp();
@@ -92,30 +88,34 @@ describe('accuware_recording_converter', () => {
       .to.deep.equal(mockDeviceInfo.estimatedDeviceCategory);
   });
 
-  it('should log exception when device info cannot be found', async function () {
+  it('should throw RecoverableInvalidRecordingError when device info cannot be found', async function () {
     stubbedGetDeviceInfo.returns(undefined);
-    await convertRecording();
 
-    expect(logExceptionSpy.firstCall.args[0])
-      .to.be.an.instanceOf(Error);
+    return expect(convertRecording()).to.be.rejectedWith(RecoverableInvalidRecordingError);
   });
 
-  it('should throw InvalidLocationInRecordingError exception if recording location not provided', async function () {
+  it('should throw RecoverableInvalidRecordingError when device category is not mobile device', async function () {
+    mockDeviceInfo.estimatedDeviceCategory = 'not mobile device';
+
+    return expect(convertRecording()).to.be.rejectedWith(RecoverableInvalidRecordingError);
+  });
+
+  it('should throw RecoverableInvalidRecordingError exception if recording location not provided', async function () {
     mockAccuwareRecording.loc = undefined;
 
-    return expect(convertRecording()).to.be.rejectedWith(InvalidLocationInRecordingError);
+    return expect(convertRecording()).to.be.rejectedWith(RecoverableInvalidRecordingError);
   });
 
-  it('should throw InvalidLocationInRecordingError exception if recording longitude not provided', async function () {
+  it('should throw RecoverableInvalidRecordingError exception if recording longitude not provided', async function () {
     mockAccuwareRecording.loc.lng = undefined;
 
-    return expect(convertRecording()).to.be.rejectedWith(InvalidLocationInRecordingError);
+    return expect(convertRecording()).to.be.rejectedWith(RecoverableInvalidRecordingError);
   });
 
-  it('should throw InvalidLocationInRecordingError exception if recording latitude not provided', async function () {
+  it('should throw RecoverableInvalidRecordingError exception if recording latitude not provided', async function () {
     mockAccuwareRecording.loc.lat = undefined;
 
-    return expect(convertRecording()).to.be.rejectedWith(InvalidLocationInRecordingError);
+    return expect(convertRecording()).to.be.rejectedWith(RecoverableInvalidRecordingError);
   });
 
   it('should throw InvalidTimestampInRecordingError exception if timestampRecorded missing', async function () {
