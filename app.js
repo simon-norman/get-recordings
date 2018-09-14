@@ -34,7 +34,7 @@ const startApp = async () => {
   monitoredSitesRegister.monitorSite(config.accuwareApi.getDeviceRecordings);
 };
 
-const wrapperToHandleUnhandledExceptions = LoggerFactory(process.env.NODE_ENV);
+const { wrapperToHandleUnhandledExceptions } = LoggerFactory(process.env.NODE_ENV);
 wrapperToHandleUnhandledExceptions(() => {
   startApp();
 });

@@ -55,6 +55,7 @@ describe('function_poller', function () {
       await setPromisifiedTimeout(250);
       expect(resultsFromFunction.length).to.equal(2);
       expect(resultsFromFunction[0]).to.equal(dataReturnedByFunction);
+
       functionPoller
         .removeListener(functionPollerConfig.functionResultEventName, callbackWhenEventTrigger);
     });
