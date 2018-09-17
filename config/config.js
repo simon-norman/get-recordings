@@ -16,7 +16,7 @@ const config = {
     accuwareApi: {
       baseConfig: configSharedAcrossEnvironments.accuwareApiConfig,
       getDeviceRecordings: {
-        siteId: 1001,
+        siteId: 1931,
         intervalPeriodInSeconds: 5,
         includeLocations: 'yes',
         devicesToInclude: 'all',

@@ -28,12 +28,12 @@ const setUpJsonToMongo = () => {
 
   jsonToMongoConfig = {
     json: deviceCategoryLookupAsJson,
-    schemaName: 'deviceCategoryLookup',
+    schemaName: 'DeviceInfo',
   };
 };
 
 const getrecordingDatabaseConnection = (environment) => {
-  const recordingDatabaseName = `${environment}_TRACKING_DATABASE_URI`;
+  const recordingDatabaseName = `${environment}_RECORDING_DATABASE_URI`;
   const recordingDatabaseUri = process.env[recordingDatabaseName];
 
   return mongoose.createConnection(recordingDatabaseUri, { useNewUrlParser: true });

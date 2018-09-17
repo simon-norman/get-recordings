@@ -86,7 +86,7 @@ const wireUpApp = () => {
   diContainer = DiContainerStamp();
 
   registerErrors();
-  const logException = LoggerFactory(process.env.NODE_ENV);
+  const { logException } = LoggerFactory(process.env.NODE_ENV);
   diContainer.registerDependency('logException', logException);
 
   registerAccuwareApi();
