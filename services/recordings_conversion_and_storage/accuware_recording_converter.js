@@ -3,7 +3,7 @@ const stampit = require('stampit');
 module.exports = (
   RecoverableInvalidRecordingError,
   InvalidTimestampInRecordingError,
-  deviceInfoController,
+  deviceInfoController
 ) => stampit({
   props: {
     RecoverableInvalidRecordingError,
