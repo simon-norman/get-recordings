@@ -27,7 +27,7 @@ const config = {
       uri: 'mongodb://localhost:27017/tracking_app_dev',
     },
     webServer: {
-      port: 3000,
+      port: 3003,
     },
   },
 
