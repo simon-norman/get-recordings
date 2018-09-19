@@ -51,6 +51,15 @@ describe('recordings_writer_for_usage_analysis', function () {
       RecordingsWriterForUsageAnalysisStamp(mockRecordingConverter);
   };
 
+  const getErrorFromFailingSaveRecordingsPromise = async () => {
+    try {
+      return await recordingsWriterForUsageAnalysis
+        .saveRecordingsInUsageAnalysisFormat(mockRecordings, mockTimestamp);
+    } catch (error) {
+      return error;
+    }
+  };
+
   beforeEach(() => {
     setUpMockRecordingApi();
 
@@ -114,12 +123,39 @@ describe('recordings_writer_for_usage_analysis', function () {
       expect(stubbedSaveRecordings.notCalled).equals(true);
     });
 
-    it('should throw error if any other error encounterd', async function () {
+    it('should throw error if any other error encounterd when converting', async function () {
       stubbedConvertRecordingForUsageAnalysis.throws();
 
       return expect(recordingsWriterForUsageAnalysis
         .saveRecordingsInUsageAnalysisFormat(mockRecordings, mockTimestamp))
         .to.be.rejected;
+    });
+
+    it('should throw error if save recordings call fails', async function () {
+      stubbedSaveRecordings.throws();
+
+      return expect(recordingsWriterForUsageAnalysis
+        .saveRecordingsInUsageAnalysisFormat(mockRecordings, mockTimestamp))
+        .to.be.rejected;
+    });
+
+    it('should throw error if recording api response is an error, capturing the response', async function () {
+      const errorMessageFromApi = 'error from api';
+      const axiosHttpErrorResponse = {
+        response: {
+          data: {
+            error: {
+              message: errorMessageFromApi,
+            },
+          },
+        },
+      };
+
+      stubbedSaveRecordings.returns(Promise.reject(axiosHttpErrorResponse));
+
+      const thrownError = await getErrorFromFailingSaveRecordingsPromise();
+
+      expect(thrownError.message).equals(errorMessageFromApi);
     });
   });
 });

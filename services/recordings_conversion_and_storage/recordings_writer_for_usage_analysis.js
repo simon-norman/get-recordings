@@ -1,6 +1,7 @@
 
 
 const stampit = require('stampit');
+const AxiosError = require('axios-error');
 
 module.exports = (
   RecoverableInvalidRecordingError,
@@ -23,7 +24,7 @@ module.exports = (
         = await this.convertAllRecordingsToUsageAnalysisFormat(recordings, timestampRecorded);
 
       if (convertedRecordings.length > 0) {
-        await this.recordingApi.saveRecordings(convertedRecordings);
+        await this.saveRecordings(convertedRecordings);
       }
     },
 
@@ -60,6 +61,17 @@ module.exports = (
         resolve();
       } else {
         reject(error);
+      }
+    },
+
+    async saveRecordings(recordings) {
+      try {
+        await this.recordingApi.saveRecordings(recordings);
+      } catch (error) {
+        if (error.response) {
+          throw new AxiosError(error.response.data.error.message, error);
+        }
+        throw error;
       }
     },
   },
