@@ -73,7 +73,7 @@ const loadDeviceCategoryLookupsIntoAllDbs = async () => {
 
   setUpJsonToMongo();
 
-  const environments = ['development', 'test'];
+  const environments = ['development'];
   const promisesToLoadLookupsIntoAllDbs = [];
 
   for (const environment of environments) {

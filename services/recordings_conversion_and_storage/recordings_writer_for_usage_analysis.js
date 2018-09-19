@@ -2,11 +2,15 @@
 
 const stampit = require('stampit');
 
-module.exports = (recordingController, RecoverableInvalidRecordingError, logException) => stampit({
+module.exports = (
+  RecoverableInvalidRecordingError,
+  logException,
+  recordingApi
+) => stampit({
   props: {
-    recordingController,
     RecoverableInvalidRecordingError,
     logException,
+    recordingApi,
   },
 
   init(recordingConverter) {
@@ -15,36 +19,42 @@ module.exports = (recordingController, RecoverableInvalidRecordingError, logExce
 
   methods: {
     async saveRecordingsInUsageAnalysisFormat(recordings, timestampRecorded) {
-      const promisesToSaveRecordingsInFormat = [];
+      const convertedRecordings
+        = await this.convertAllRecordingsToUsageAnalysisFormat(recordings, timestampRecorded);
 
-      for (const recording of recordings) {
-        const promiseToSaveRecording
-          = this.getPromiseToSaveRecordingInFormat(recording, timestampRecorded);
-        promisesToSaveRecordingsInFormat.push(promiseToSaveRecording);
+      if (convertedRecordings.length > 0) {
+        await this.recordingApi.saveRecordings(convertedRecordings);
       }
-
-      await Promise.all(promisesToSaveRecordingsInFormat);
     },
 
-    async getPromiseToSaveRecordingInFormat(recording, timestampRecorded) {
+    async convertAllRecordingsToUsageAnalysisFormat(recordings, timestampRecorded) {
+      const promisesToConvertRecordings = [];
+
+      for (const recording of recordings) {
+        const promiseToConvertRecording
+         = this.getPromiseToConvertRecording(recording, timestampRecorded);
+
+        promisesToConvertRecordings.push(promiseToConvertRecording);
+      }
+      const convertedRecordings = await Promise.all(promisesToConvertRecordings);
+
+      return convertedRecordings.filter(convertedRecording => convertedRecording !== undefined);
+    },
+
+    async getPromiseToConvertRecording(recording, timestampRecorded) {
       return new Promise(async (resolve, reject) => {
         try {
-          await this.saveSingleRecordingInUsageAnalysisFormat(recording, timestampRecorded);
-          resolve();
+          const convertedRecording = await this.recordingConverter
+            .convertRecordingForUsageAnalysis(recording, timestampRecorded);
+
+          resolve(convertedRecording);
         } catch (error) {
-          this.handleSaveRecordingInUsageAnalysisFormatError(error, resolve, reject);
+          this.handleConvertRecordingError(error, resolve, reject);
         }
       });
     },
 
-    async saveSingleRecordingInUsageAnalysisFormat(recording, timestampRecorded) {
-      const convertedRecording = await this.recordingConverter
-        .convertRecordingForUsageAnalysis(recording, timestampRecorded);
-
-      recordingController.saveSingleRecording(convertedRecording);
-    },
-
-    handleSaveRecordingInUsageAnalysisFormatError(error, resolve, reject) {
+    handleConvertRecordingError(error, resolve, reject) {
       if (error instanceof this.RecoverableInvalidRecordingError) {
         logException(error);
         resolve();

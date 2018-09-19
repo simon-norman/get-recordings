@@ -9,8 +9,8 @@ const { expect } = chai;
 
 
 describe('recordings_writer_for_usage_analysis', function () {
-  let stubbedSaveSingleRecording;
-  let mockRecordingController;
+  let stubbedSaveRecordings;
+  let mockRecordingApi;
   let RecordingsWriterForUsageAnalysisStamp;
   let mockConvertedRecording;
   let stubbedLogException;
@@ -20,11 +20,13 @@ describe('recordings_writer_for_usage_analysis', function () {
   let mockRecordings;
   let mockTimestamp;
 
-  const setUpMockRecordingController = () => {
-    stubbedSaveSingleRecording = sinon.stub();
+  const recoverableInvalidRecordingError = new RecoverableInvalidRecordingError();
 
-    mockRecordingController = {
-      saveSingleRecording: stubbedSaveSingleRecording,
+  const setUpMockRecordingApi = () => {
+    stubbedSaveRecordings = sinon.stub();
+
+    mockRecordingApi = {
+      saveRecordings: stubbedSaveRecordings,
     };
   };
 
@@ -40,9 +42,9 @@ describe('recordings_writer_for_usage_analysis', function () {
 
   const setUpRecordingsWriterForUsageAnalysis = () => {
     RecordingsWriterForUsageAnalysisStamp = RecordingsWriterForUsageAnalysisStampFactory(
-      mockRecordingController,
       RecoverableInvalidRecordingError,
       stubbedLogException,
+      mockRecordingApi,
     );
 
     recordingsWriterForUsageAnalysis =
@@ -50,7 +52,7 @@ describe('recordings_writer_for_usage_analysis', function () {
   };
 
   beforeEach(() => {
-    setUpMockRecordingController();
+    setUpMockRecordingApi();
 
     setUpMockRecordingConverter();
 
@@ -61,8 +63,8 @@ describe('recordings_writer_for_usage_analysis', function () {
     mockTimestamp = 'timestamp';
   });
 
-  describe('Loop through recordings and convert and save each one for usage analysis', function () {
-    it('should pass a group of recordings to be converted for usage analysis', async function () {
+  describe('Convert and save recordings for usage analysis', function () {
+    it('should pass recordings to be converted for usage analysis', async function () {
       await recordingsWriterForUsageAnalysis
         .saveRecordingsInUsageAnalysisFormat(mockRecordings, mockTimestamp);
 
@@ -77,15 +79,11 @@ describe('recordings_writer_for_usage_analysis', function () {
       await recordingsWriterForUsageAnalysis
         .saveRecordingsInUsageAnalysisFormat(mockRecordings, mockTimestamp);
 
-      expect(stubbedSaveSingleRecording.firstCall.args[0])
-        .to.equal(mockConvertedRecording);
-
-      expect(stubbedSaveSingleRecording.secondCall.args[0])
-        .to.equal(mockConvertedRecording);
+      expect(stubbedSaveRecordings.firstCall.args[0])
+        .deep.equals([mockConvertedRecording, mockConvertedRecording]);
     });
 
-    it('should move onto converting & saving the next recording if it catches an RecoverableInvalidRecordingError, logging the exception', async function () {
-      const recoverableInvalidRecordingError = new RecoverableInvalidRecordingError();
+    it('should move onto converting the next recording if it catches an RecoverableInvalidRecordingError, logging the exception', async function () {
       stubbedConvertRecordingForUsageAnalysis.throws(recoverableInvalidRecordingError);
 
       await recordingsWriterForUsageAnalysis
@@ -96,6 +94,24 @@ describe('recordings_writer_for_usage_analysis', function () {
 
       const exceptionPassedToStubbedLogException = stubbedLogException.firstCall.args[0];
       expect(exceptionPassedToStubbedLogException).to.equal(recoverableInvalidRecordingError);
+    });
+
+    it('should, if convert some recordings but not others, continue to save the converted ones', async function () {
+      stubbedConvertRecordingForUsageAnalysis.onCall(1).throws(recoverableInvalidRecordingError);
+
+      await recordingsWriterForUsageAnalysis
+        .saveRecordingsInUsageAnalysisFormat(mockRecordings, mockTimestamp);
+
+      expect(stubbedSaveRecordings.calledOnceWithExactly([mockConvertedRecording])).equals(true);
+    });
+
+    it('should not attempt to save recordings if all recordings fail to convert', async function () {
+      stubbedConvertRecordingForUsageAnalysis.throws(recoverableInvalidRecordingError);
+
+      await recordingsWriterForUsageAnalysis
+        .saveRecordingsInUsageAnalysisFormat(mockRecordings, mockTimestamp);
+
+      expect(stubbedSaveRecordings.notCalled).equals(true);
     });
 
     it('should throw error if any other error encounterd', async function () {
