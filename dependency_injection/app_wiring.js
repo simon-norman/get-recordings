@@ -2,12 +2,15 @@
 const DependencyNotFoundError = require('../services/error_handling/errors/DependencyNotFoundError.js');
 const DependencyAlreadyRegisteredError = require('../services/error_handling/errors/DependencyAlreadyRegisteredError');
 const DiContainerStampFactory = require('./di_container');
+const DiContainerInclStampsStampFactory = require('./di_container_incl_stamps');
 const { getConfigForEnvironment } = require('../config/config.js');
 const RecoverableInvalidRecordingError = require('../services/error_handling/errors/RecoverableInvalidRecordingError');
 const InvalidTimestampInRecordingError = require('../services/error_handling/errors/InvalidTimestampInRecordingError.js');
 const LoggerFactory = require('../services/error_handling/logger/logger.js');
-const AccuwareApiStampFactory = require('../services/recordings_retrieval/accuware_api');
 const BaseApiStampFactory = require('../helpers/base_api/base_api');
+const RetryEnabledApiStampFactory = require('../helpers/base_api/retry_enabled_api');
+const RecordingApiStampFactory = require('../services/recordings_conversion_and_storage/recording_api');
+const AccuwareApiStampFactory = require('../services/recordings_retrieval/accuware_api');
 const EventEmittableStamp = require('../helpers/event_generation/event_emittable_stamp');
 const FunctionPollerStampFactory = require('../services/function_poller/function_poller');
 const RecordingsWriterForUsageAnalysisStampFactory = require('../services/recordings_conversion_and_storage/recordings_writer_for_usage_analysis');
@@ -20,77 +23,120 @@ const Recording = require('../models/recording');
 const RecordingControllerStampFactory = require('../controllers/recording_controller');
 
 let diContainer;
+let registerDependency;
+let registerDependencyFromFactory;
+let registerDependencyFromStampFactory;
+let getDependency;
+const environment = process.env.NODE_ENV;
 
-const registerErrors = () => {
-  diContainer.registerDependency('RecoverableInvalidRecordingError', RecoverableInvalidRecordingError);
-  diContainer.registerDependency('InvalidTimestampInRecordingError', InvalidTimestampInRecordingError);
+const getFunctionsFromDiContainer = () => {
+  ({
+    registerDependency,
+    registerDependencyFromFactory,
+    registerDependencyFromStampFactory,
+    getDependency,
+  } = diContainer);
+
+  registerDependency = registerDependency.bind(diContainer);
+  registerDependencyFromFactory = registerDependencyFromFactory.bind(diContainer);
+  registerDependencyFromStampFactory = registerDependencyFromStampFactory.bind(diContainer);
+  getDependency = getDependency.bind(diContainer);
 };
 
-const registerAccuwareApi = () => {
-  const config = getConfigForEnvironment(process.env.NODE_ENV);
-  const apiConfig = config.accuwareApi.baseConfig;
-  diContainer.registerDependency('apiConfig', apiConfig);
-
-  diContainer.registerDependencyFromFactory('BaseApiStamp', BaseApiStampFactory);
-  diContainer.registerDependencyFromFactory('AccuwareApiStamp', AccuwareApiStampFactory);
-};
-
-const registerFunctionPoller = () => {
-  diContainer.registerDependencyFromFactory('FunctionPollerStamp', FunctionPollerStampFactory);
-};
-
-const registerRecordingConverter = () => {
-  diContainer.registerDependencyFromFactory('AccuwareRecordingConverterStamp', AccuwareRecordingConverterStampFactory);
-  const AccuwareRecordingConverterStamp = diContainer.getDependency('AccuwareRecordingConverterStamp');
-  diContainer.registerDependency('accuwareRecordingConverter', AccuwareRecordingConverterStamp());
-};
-
-const registerRecordingController = () => {
-  diContainer.registerDependency('Recording', Recording);
-  diContainer.registerDependencyFromFactory('RecordingControllerStamp', RecordingControllerStampFactory);
-  const RecordingControllerStamp = diContainer.getDependency('RecordingControllerStamp');
-  diContainer.registerDependency('recordingController', RecordingControllerStamp());
-};
-
-const registerDeviceInfoController = () => {
-  diContainer.registerDependency('DeviceInfo', DeviceInfo);
-  diContainer.registerDependencyFromFactory('DeviceInfoControllerStamp', DeviceInfoControllerStampFactory);
-  const DeviceInfoControllerStamp = diContainer.getDependency('DeviceInfoControllerStamp');
-  diContainer.registerDependency('deviceInfoController', DeviceInfoControllerStamp());
-};
-
-const registerRecordingsWriterForUsageAnalysis = () => {
-  diContainer.registerDependencyFromFactory('RecordingsWriterForUsageAnalysisStamp', RecordingsWriterForUsageAnalysisStampFactory);
-  const RecordingsWriterForUsageAnalysisStamp = diContainer.getDependency('RecordingsWriterForUsageAnalysisStamp');
-  const accuwareRecordingConverter = diContainer.getDependency('accuwareRecordingConverter');
-  diContainer.registerDependency('recordingsWriterForUsageAnalysis', RecordingsWriterForUsageAnalysisStamp(accuwareRecordingConverter));
-};
-
-const registerUnconvertedRecordingsGetter = () => {
-  diContainer.registerDependencyFromFactory('UnconvertedRecordingsGetterStamp', UnconvertedRecordingsGetterStampFactory);
-  const UnconvertedRecordingsGetterStamp = diContainer.getDependency('UnconvertedRecordingsGetterStamp');
-  diContainer.registerDependency('unconvertedRecordingsGetter', UnconvertedRecordingsGetterStamp());
-};
-
-const registerMonitoredSitesRegister = () => {
-  diContainer.registerDependencyFromFactory('MonitoredSitesRegisterStamp', MonitoredSitesRegisterStampFactory);
-  const MonitoredSitesRegisterStamp = diContainer.getDependency('MonitoredSitesRegisterStamp');
-  diContainer.registerDependency('monitoredSitesRegister', MonitoredSitesRegisterStamp());
-};
-
-const wireUpApp = () => {
+const setUpDiContainer = () => {
   const DiContainerStamp = DiContainerStampFactory(
     DependencyNotFoundError,
     DependencyAlreadyRegisteredError,
   );
-  diContainer = DiContainerStamp();
+  const DiContainerInclStampsStamp = DiContainerInclStampsStampFactory(DiContainerStamp);
 
-  registerErrors();
-  const { logException } = LoggerFactory(process.env.NODE_ENV);
-  diContainer.registerDependency('logException', logException);
+  diContainer = DiContainerInclStampsStamp();
+  getFunctionsFromDiContainer();
+};
+
+const registerErrors = () => {
+  registerDependency('RecoverableInvalidRecordingError', RecoverableInvalidRecordingError);
+  registerDependency('InvalidTimestampInRecordingError', InvalidTimestampInRecordingError);
+};
+
+const registerAccuwareApi = () => {
+  const config = getConfigForEnvironment(environment);
+  const apiConfig = config.accuwareApi.baseConfig;
+  registerDependency('apiConfig', apiConfig);
+
+  registerDependencyFromFactory('AccuwareApiStamp', AccuwareApiStampFactory);
+};
+
+const registerRecordingApi = () => {
+  const recordingApiConfig = getConfigForEnvironment(environment).recordingApi;
+  const RecordingApiStamp = registerDependencyFromFactory('RecordingApiStamp', RecordingApiStampFactory);
+  const recordingApi = RecordingApiStamp({ apiConfig: recordingApiConfig });
+
+  registerDependency('recordingApi', recordingApi);
+};
+
+
+const registerApis = () => {
+  registerDependencyFromFactory('BaseApiStamp', BaseApiStampFactory);
+  registerDependencyFromFactory('RetryEnabledApiStamp', RetryEnabledApiStampFactory);
 
   registerAccuwareApi();
-  diContainer.registerDependency('EventEmittableStamp', EventEmittableStamp);
+
+  registerRecordingApi();
+};
+
+const registerFunctionPoller = () => {
+  registerDependencyFromFactory('FunctionPollerStamp', FunctionPollerStampFactory);
+};
+
+const registerRecordingConverter = () => {
+  registerDependencyFromFactory('AccuwareRecordingConverterStamp', AccuwareRecordingConverterStampFactory);
+  const AccuwareRecordingConverterStamp = getDependency('AccuwareRecordingConverterStamp');
+  registerDependency('accuwareRecordingConverter', AccuwareRecordingConverterStamp());
+};
+
+const registerRecordingController = () => {
+  registerDependency('Recording', Recording);
+  registerDependencyFromFactory('RecordingControllerStamp', RecordingControllerStampFactory);
+  const RecordingControllerStamp = getDependency('RecordingControllerStamp');
+  registerDependency('recordingController', RecordingControllerStamp());
+};
+
+const registerDeviceInfoController = () => {
+  registerDependency('DeviceInfo', DeviceInfo);
+  registerDependencyFromFactory('DeviceInfoControllerStamp', DeviceInfoControllerStampFactory);
+  const DeviceInfoControllerStamp = getDependency('DeviceInfoControllerStamp');
+  registerDependency('deviceInfoController', DeviceInfoControllerStamp());
+};
+
+const registerRecordingsWriterForUsageAnalysis = () => {
+  registerDependencyFromFactory('RecordingsWriterForUsageAnalysisStamp', RecordingsWriterForUsageAnalysisStampFactory);
+  const RecordingsWriterForUsageAnalysisStamp = getDependency('RecordingsWriterForUsageAnalysisStamp');
+  const accuwareRecordingConverter = getDependency('accuwareRecordingConverter');
+  registerDependency('recordingsWriterForUsageAnalysis', RecordingsWriterForUsageAnalysisStamp(accuwareRecordingConverter));
+};
+
+const registerUnconvertedRecordingsGetter = () => {
+  registerDependencyFromFactory('UnconvertedRecordingsGetterStamp', UnconvertedRecordingsGetterStampFactory);
+  const UnconvertedRecordingsGetterStamp = getDependency('UnconvertedRecordingsGetterStamp');
+  registerDependency('unconvertedRecordingsGetter', UnconvertedRecordingsGetterStamp());
+};
+
+const registerMonitoredSitesRegister = () => {
+  registerDependencyFromFactory('MonitoredSitesRegisterStamp', MonitoredSitesRegisterStampFactory);
+  const MonitoredSitesRegisterStamp = getDependency('MonitoredSitesRegisterStamp');
+  registerDependency('monitoredSitesRegister', MonitoredSitesRegisterStamp());
+};
+
+const wireUpApp = () => {
+  setUpDiContainer();
+
+  registerErrors();
+  const { logException } = LoggerFactory(environment);
+  registerDependency('logException', logException);
+
+  registerApis();
+  registerDependency('EventEmittableStamp', EventEmittableStamp);
   registerFunctionPoller();
 
   registerDeviceInfoController();

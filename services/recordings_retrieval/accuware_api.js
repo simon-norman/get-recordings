@@ -1,9 +1,9 @@
 const stampit = require('stampit');
 
-const checkStampFactoryArgumentsValid = (BaseApiStamp) => {
+const checkStampFactoryArgumentsValid = (RetryEnabledApiStamp) => {
   const errors = [];
-  if (!BaseApiStamp) {
-    errors.push('Base Api Stamp not provided to Accuware Api stamp factory');
+  if (!RetryEnabledApiStamp) {
+    errors.push('Retry Enabled Api Stamp not provided to Accuware Api stamp factory');
   }
 
   if (errors.length) {
@@ -11,8 +11,8 @@ const checkStampFactoryArgumentsValid = (BaseApiStamp) => {
   }
 };
 
-module.exports = (BaseApiStamp) => {
-  checkStampFactoryArgumentsValid(BaseApiStamp);
+module.exports = (RetryEnabledApiStamp) => {
+  checkStampFactoryArgumentsValid(RetryEnabledApiStamp);
   const AccuwareApiStamp = stampit({
     props: {
       baseDeviceRecordingsPath: '/sites/siteId/stations/',
@@ -23,13 +23,15 @@ module.exports = (BaseApiStamp) => {
     },
 
     init({
-      siteId,
-      intervalPeriodInSeconds,
-      includeLocations = 'yes',
-      devicesToInclude = 'all',
-      areas = 'yes',
+      siteConfig: {
+        siteId,
+        intervalPeriodInSeconds,
+        includeLocations = 'yes',
+        devicesToInclude = 'all',
+        areas = 'yes',
+      },
     }) {
-      this.checkStampInitArgumentsValid(arguments[0]);
+      this.checkStampInitArgumentsValid(arguments[0].siteConfig);
 
       this.setFinalDeviceRecordingsPath(siteId);
       this.recordingsCallParams.params.lrrt = intervalPeriodInSeconds;
@@ -72,5 +74,5 @@ module.exports = (BaseApiStamp) => {
       },
     },
   });
-  return AccuwareApiStamp.compose(BaseApiStamp);
+  return AccuwareApiStamp.compose(RetryEnabledApiStamp);
 };

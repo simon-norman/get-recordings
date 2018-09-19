@@ -12,8 +12,8 @@ module.exports = (AccuwareApiStamp, FunctionPollerStamp, unconvertedRecordingsGe
   },
 
   methods: {
-    monitorSite(siteConfig) {
-      const accuwareApi = AccuwareApiStamp(siteConfig);
+    monitorSite({ apiConfig, siteConfig }) {
+      const accuwareApi = AccuwareApiStamp({ apiConfig, siteConfig });
 
       this.setUpGetRecordingsObject(siteConfig, accuwareApi);
       const getRecordings = this.getRecordingsObject.pollFunction.bind(this.getRecordingsObject);

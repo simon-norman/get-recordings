@@ -31,7 +31,10 @@ const startApp = async () => {
 
   const monitoredSitesRegister = diContainer.getDependency('monitoredSitesRegister');
 
-  monitoredSitesRegister.monitorSite(config.accuwareApi.getDeviceRecordings);
+  monitoredSitesRegister.monitorSite({
+    apiConfig: config.accuwareApi.baseConfig,
+    siteConfig: config.accuwareApi.getDeviceRecordings,
+  });
 };
 
 const { wrapperToHandleUnhandledExceptions } = LoggerFactory(process.env.NODE_ENV);

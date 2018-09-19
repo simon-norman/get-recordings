@@ -1,12 +1,10 @@
 
 const configSharedAcrossEnvironments = {
   accuwareApiConfig: {
-    baseUrl: 'https://its.accuware.com/api/v1',
-    headers: {
-      authorization: {
-        username: process.env.ACCUWARE_API_USERNAME,
-        password: process.env.ACCUWARE_API_PASSWORD,
-      },
+    baseURL: 'https://its.accuware.com/api/v1',
+    auth: {
+      username: process.env.ACCUWARE_API_USERNAME,
+      password: process.env.ACCUWARE_API_PASSWORD,
     },
   },
 };
@@ -22,6 +20,9 @@ const config = {
         devicesToInclude: 'all',
         areas: 'yes',
       },
+    },
+    recordingApi: {
+      baseURL: 'http://localhost:3000',
     },
     recordingDatabase: {
       uri: 'mongodb://localhost:27017/tracking_app_dev',
@@ -42,6 +43,9 @@ const config = {
         areas: 'yes',
       },
     },
+    recordingApi: {
+      baseURL: 'http://localhost:3000',
+    },
     recordingDatabase: {
       uri: process.env.RECORDING_DATABASE_URI,
     },
@@ -61,6 +65,9 @@ const config = {
         areas: 'yes',
       },
     },
+    recordingApi: {
+      baseURL: 'http://localhost:3000',
+    },
     recordingDatabase: {
       uri: process.env.RECORDING_DATABASE_URI,
     },
@@ -79,6 +86,9 @@ const config = {
         devicesToInclude: 'all',
         areas: 'yes',
       },
+    },
+    recordingApi: {
+      baseURL: 'http://localhost:3000',
     },
     recordingDatabase: {
       uri: process.env.RECORDING_DATABASE_URI,
