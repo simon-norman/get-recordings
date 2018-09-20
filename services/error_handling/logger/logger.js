@@ -7,7 +7,7 @@ module.exports = (environment) => {
 
   const setUpRaven = () => {
     Raven.config(
-      'https://c8afdeeb3dcd4ce1ac8575637d5114f0@sentry.io/1284856',
+      'https://068084ef143940ab92b8d162f253702a@sentry.io/1268748',
       {
         captureUnhandledRejections: true,
       },
