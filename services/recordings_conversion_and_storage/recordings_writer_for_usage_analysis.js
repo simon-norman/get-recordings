@@ -57,7 +57,6 @@ module.exports = (
 
     handleConvertRecordingError(error, resolve, reject) {
       if (error instanceof this.RecoverableInvalidRecordingError) {
-        logException([error, { level: 'info' }]);
         resolve();
       } else {
         reject(error);

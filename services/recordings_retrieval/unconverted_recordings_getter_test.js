@@ -165,8 +165,8 @@ describe('unconverted_recordings_getter', function () {
 
       await setPromisifiedTimeout(50);
 
-      const exceptionPassedToStubbedLogException = stubbedLogExceptionFunction.firstCall.args[0];
-      expect(exceptionPassedToStubbedLogException).deep.equals([getRecordingsResponseError, { level: 'warning' }]);
+      expect(stubbedLogExceptionFunction.firstCall.args[0]).deep.equals(getRecordingsResponseError);
+      expect(stubbedLogExceptionFunction.firstCall.args[1]).deep.equals({ level: 'warning' });
       expect(stubbedStopGettingRecordingsForThisSiteFunction.calledOnce).to.equal(false);
     });
   });

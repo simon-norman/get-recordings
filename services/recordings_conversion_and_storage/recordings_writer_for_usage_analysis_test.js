@@ -92,7 +92,7 @@ describe('recordings_writer_for_usage_analysis', function () {
         .deep.equals([mockConvertedRecording, mockConvertedRecording]);
     });
 
-    it('should move onto converting the next recording if catches RecoverableInvalidRecordingError, logging the exception with level set to info', async function () {
+    it('should move onto converting the next recording if catches RecoverableInvalidRecordingError', async function () {
       stubbedConvertRecordingForUsageAnalysis.throws(recoverableInvalidRecordingError);
 
       await recordingsWriterForUsageAnalysis
@@ -100,12 +100,6 @@ describe('recordings_writer_for_usage_analysis', function () {
 
       expect(stubbedConvertRecordingForUsageAnalysis.secondCall.args)
         .to.deep.equal([mockRecordings[1], mockTimestamp]);
-
-      const exceptionPassedToStubbedLogException = stubbedLogException.firstCall.args[0];
-      expect(exceptionPassedToStubbedLogException).deep.equals([
-        recoverableInvalidRecordingError,
-        { level: 'info' },
-      ]);
     });
 
     it('should, if convert some recordings but not others, continue to save the converted ones', async function () {
