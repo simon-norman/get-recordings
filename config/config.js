@@ -61,6 +61,15 @@ const config = {
     webServer: {
       port: process.env.PORT,
     },
+    errorLogging: {
+      environment: '',
+      ravenConfig: [
+        process.env.RAVEN_DSN,
+        {
+          captureUnhandledRejections: true,
+        },
+      ],
+    },
   },
 
   qa: {
@@ -83,6 +92,15 @@ const config = {
     webServer: {
       port: process.env.PORT,
     },
+    errorLogging: {
+      environment: '',
+      ravenConfig: [
+        process.env.RAVEN_DSN,
+        {
+          captureUnhandledRejections: true,
+        },
+      ],
+    },
   },
 
   production: {
@@ -104,6 +122,15 @@ const config = {
     },
     webServer: {
       port: process.env.PORT,
+    },
+    errorLogging: {
+      environment: '',
+      ravenConfig: [
+        process.env.RAVEN_DSN,
+        {
+          captureUnhandledRejections: true,
+        },
+      ],
     },
   },
 };
