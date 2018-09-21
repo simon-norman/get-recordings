@@ -10,6 +10,7 @@ describe('accuware_api', () => {
   let stubbedDeviceRecordings;
   let getStub;
   let BaseApiStamp;
+  let siteConfig;
   let recordingsCallParams;
   let AccuwareApiStamp;
   let accuwareApi;
@@ -26,12 +27,16 @@ describe('accuware_api', () => {
   };
 
   const setRecordingsCallParams = () => {
-    recordingsCallParams = {
+    siteConfig = {
       siteId: '10',
       includeLocations: 'no',
       devicesToInclude: 'all',
       intervalPeriodInSeconds: 1,
       areas: 'yes',
+    };
+
+    recordingsCallParams = {
+      siteConfig,
     };
   };
 
@@ -53,13 +58,13 @@ describe('accuware_api', () => {
       await accuwareApi.getDeviceRecordings();
 
       expect(getStub.calledWithExactly(
-        `/sites/${recordingsCallParams.siteId}/stations/`,
+        `/sites/${siteConfig.siteId}/stations/`,
         {
           params: {
-            loc: recordingsCallParams.includeLocations,
-            type: recordingsCallParams.devicesToInclude,
-            lrrt: recordingsCallParams.intervalPeriodInSeconds,
-            areas: recordingsCallParams.areas,
+            loc: siteConfig.includeLocations,
+            type: siteConfig.devicesToInclude,
+            lrrt: siteConfig.intervalPeriodInSeconds,
+            areas: siteConfig.areas,
           },
         },
       )).to.equal(true);
@@ -95,7 +100,7 @@ describe('accuware_api', () => {
     });
 
     it('should throw error if site id not provided', async () => {
-      delete recordingsCallParams.siteId;
+      delete siteConfig.siteId;
       const createAccuwareApiWithoutSiteId = () => {
         AccuwareApiStamp(recordingsCallParams);
       };
@@ -104,7 +109,7 @@ describe('accuware_api', () => {
     });
 
     it('should throw error if interval period not provided', async () => {
-      delete recordingsCallParams.intervalPeriodInSeconds;
+      delete siteConfig.intervalPeriodInSeconds;
       const createAccuwareApiWithoutIntervalPeriod = () => {
         AccuwareApiStamp(recordingsCallParams);
       };
@@ -113,8 +118,10 @@ describe('accuware_api', () => {
     });
 
     it('should include error messages for each error thrown', function () {
+      delete siteConfig.siteId;
+      delete siteConfig.intervalPeriodInSeconds;
       const createAccuwareApiWithoutParams = () => {
-        AccuwareApiStamp();
+        AccuwareApiStamp(recordingsCallParams);
       };
 
       try {
