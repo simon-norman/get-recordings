@@ -4,7 +4,7 @@ const JsonToMongoWriterStamp = require('./json_to_mongo_writer');
 const mongoose = require('mongoose');
 
 
-describe('device_category_lookup_collection_writer', () => {
+describe('json_to_mongo_writer', () => {
   let mongooseConnection;
   let jsonToMongoWriter;
 
