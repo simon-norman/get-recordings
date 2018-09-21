@@ -30,6 +30,15 @@ const config = {
     webServer: {
       port: 3003,
     },
+    errorLogging: {
+      environment: '',
+      ravenConfig: [
+        process.env.RAVEN_DSN,
+        {
+          captureUnhandledRejections: true,
+        },
+      ],
+    },
   },
 
   test: {

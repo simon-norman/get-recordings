@@ -6,7 +6,7 @@ const DiContainerInclStampsStampFactory = require('./di_container_incl_stamps');
 const { getConfigForEnvironment } = require('../config/config.js');
 const RecoverableInvalidRecordingError = require('../services/error_handling/errors/RecoverableInvalidRecordingError');
 const InvalidTimestampInRecordingError = require('../services/error_handling/errors/InvalidTimestampInRecordingError.js');
-const LoggerFactory = require('../services/error_handling/logger/logger.js');
+const RavenWrapperFactory = require('raven-wrapper');
 const BaseApiStampFactory = require('../helpers/base_api/base_api');
 const RetryEnabledApiStampFactory = require('../helpers/base_api/retry_enabled_api');
 const RecordingApiStampFactory = require('../services/recordings_conversion_and_storage/recording_api');
@@ -123,7 +123,10 @@ const wireUpApp = () => {
   setUpDiContainer();
 
   registerErrors();
-  const { logException } = LoggerFactory(environment);
+
+  const errorLoggingConfig = getConfigForEnvironment(process.env.NODE_ENV).errorLogging;
+  errorLoggingConfig.environment = process.env.NODE_ENV;
+  const { logException } = RavenWrapperFactory(errorLoggingConfig);
   registerDependency('logException', logException);
 
   registerApis();
