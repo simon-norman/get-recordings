@@ -53,7 +53,7 @@ const config = {
       },
     },
     recordingApi: {
-      baseURL: 'http://localhost:3000',
+      baseURL: process.env.RECORDING_API_URL,
     },
     recordingDatabase: {
       uri: process.env.RECORDING_DATABASE_URI,
@@ -84,7 +84,7 @@ const config = {
       },
     },
     recordingApi: {
-      baseURL: 'http://localhost:3000',
+      baseURL: process.env.RECORDING_API_URL,
     },
     recordingDatabase: {
       uri: process.env.RECORDING_DATABASE_URI,
@@ -115,7 +115,7 @@ const config = {
       },
     },
     recordingApi: {
-      baseURL: 'http://localhost:3000',
+      baseURL: process.env.RECORDING_API_URL,
     },
     recordingDatabase: {
       uri: process.env.RECORDING_DATABASE_URI,
