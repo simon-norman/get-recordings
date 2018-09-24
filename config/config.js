@@ -32,12 +32,12 @@ const config = {
     },
     errorLogging: {
       environment: '',
-      ravenConfig: [
-        process.env.RAVEN_DSN,
-        {
+      ravenConfig: {
+        dsn: process.env.RAVEN_DSN,
+        options: {
           captureUnhandledRejections: true,
         },
-      ],
+      },
     },
   },
 
@@ -63,12 +63,12 @@ const config = {
     },
     errorLogging: {
       environment: '',
-      ravenConfig: [
-        process.env.RAVEN_DSN,
-        {
+      ravenConfig: {
+        dsn: process.env.RAVEN_DSN,
+        options: {
           captureUnhandledRejections: true,
         },
-      ],
+      },
     },
   },
 
@@ -94,12 +94,12 @@ const config = {
     },
     errorLogging: {
       environment: '',
-      ravenConfig: [
-        process.env.RAVEN_DSN,
-        {
+      ravenConfig: {
+        dsn: process.env.RAVEN_DSN,
+        options: {
           captureUnhandledRejections: true,
         },
-      ],
+      },
     },
   },
 
@@ -125,12 +125,12 @@ const config = {
     },
     errorLogging: {
       environment: '',
-      ravenConfig: [
-        process.env.RAVEN_DSN,
-        {
+      ravenConfig: {
+        dsn: process.env.RAVEN_DSN,
+        options: {
           captureUnhandledRejections: true,
         },
-      ],
+      },
     },
   },
 };
