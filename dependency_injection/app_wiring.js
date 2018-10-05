@@ -21,6 +21,7 @@ const DeviceInfo = require('../models/device_info');
 const DeviceInfoControllerStampFactory = require('../controllers/device_info_controller');
 
 let diContainer;
+let config;
 let registerDependency;
 let registerDependencyFromFactory;
 let registerDependencyFromStampFactory;
@@ -58,7 +59,6 @@ const registerErrors = () => {
 };
 
 const registerAccuwareApi = () => {
-  const config = getConfigForEnvironment(environment);
   const apiConfig = config.accuwareApi.baseConfig;
   registerDependency('apiConfig', apiConfig);
 
@@ -66,10 +66,11 @@ const registerAccuwareApi = () => {
 };
 
 const registerRecordingApi = () => {
-  const recordingApiConfig = getConfigForEnvironment(environment).recordingApi;
+  const recordingApiConfig = config.recordingApi.baseConfig;
+  registerDependency('recordingsApiAccessTokenConfig', config.recordingApi.recordingsApiAccessTokenConfig);
   const RecordingApiStamp = registerDependencyFromFactory('RecordingApiStamp', RecordingApiStampFactory);
-  const recordingApi = RecordingApiStamp({ apiConfig: recordingApiConfig });
 
+  const recordingApi = RecordingApiStamp({ apiConfig: recordingApiConfig });
   registerDependency('recordingApi', recordingApi);
 };
 
@@ -120,12 +121,14 @@ const registerMonitoredSitesRegister = () => {
 };
 
 const wireUpApp = () => {
+  config = getConfigForEnvironment(environment);
+
   setUpDiContainer();
 
   registerErrors();
 
-  const errorLoggingConfig = getConfigForEnvironment(process.env.NODE_ENV).errorLogging;
-  errorLoggingConfig.environment = process.env.NODE_ENV;
+  const errorLoggingConfig = config.errorLogging;
+  errorLoggingConfig.environment = environment;
   const { logException } = RavenWrapperFactory(errorLoggingConfig);
   registerDependency('logException', logException);
 

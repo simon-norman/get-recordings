@@ -14,7 +14,7 @@ const config = {
     accuwareApi: {
       baseConfig: configSharedAcrossEnvironments.accuwareApiConfig,
       getDeviceRecordings: {
-        siteId: 1931,
+        siteId: 1001,
         intervalPeriodInSeconds: 5,
         includeLocations: 'yes',
         devicesToInclude: 'all',
@@ -22,7 +22,18 @@ const config = {
       },
     },
     recordingApi: {
-      baseURL: 'http://localhost:3000',
+      baseConfig: {
+        baseURL: 'http://localhost:3000',
+      },
+      recordingsApiAccessTokenConfig: {
+        accessTokenServerUrl: 'https://recordings.eu.auth0.com/oauth/token',
+        credentialsToGetAccessToken: {
+          grant_type: 'client_credentials',
+          client_id: 'ax40REVrKWMRBBkLaSfIA452F1IVZYEg',
+          client_secret: process.env.GET_RECORDINGS_CLIENT_SECRET,
+          audience: 'https://api-recording.herokuapp.com/',
+        },
+      },
     },
     recordingDatabase: {
       uri: 'mongodb://localhost:27017/tracking_app_dev',
@@ -54,6 +65,15 @@ const config = {
     },
     recordingApi: {
       baseURL: process.env.RECORDING_API_URL,
+      recordingsApiAccessTokenConfig: {
+        accessTokenServerUrl: 'https://recordings.eu.auth0.com/oauth/token',
+        credentialsToGetAccessToken: {
+          grant_type: 'client_credentials',
+          client_id: 'ax40REVrKWMRBBkLaSfIA452F1IVZYEg',
+          client_secret: process.env.GET_RECORDINGS_CLIENT_SECRET,
+          audience: 'https://api-recording.herokuapp.com/',
+        },
+      },
     },
     recordingDatabase: {
       uri: process.env.RECORDING_DATABASE_URI,
@@ -85,6 +105,15 @@ const config = {
     },
     recordingApi: {
       baseURL: process.env.RECORDING_API_URL,
+      recordingsApiAccessTokenConfig: {
+        accessTokenServerUrl: 'https://recordings.eu.auth0.com/oauth/token',
+        credentialsToGetAccessToken: {
+          grant_type: 'client_credentials',
+          client_id: 'ax40REVrKWMRBBkLaSfIA452F1IVZYEg',
+          client_secret: process.env.GET_RECORDINGS_CLIENT_SECRET,
+          audience: 'https://api-recording.herokuapp.com/',
+        },
+      },
     },
     recordingDatabase: {
       uri: process.env.RECORDING_DATABASE_URI,
@@ -116,6 +145,15 @@ const config = {
     },
     recordingApi: {
       baseURL: process.env.RECORDING_API_URL,
+      recordingsApiAccessTokenConfig: {
+        accessTokenServerUrl: 'https://recordings.eu.auth0.com/oauth/token',
+        credentialsToGetAccessToken: {
+          grant_type: 'client_credentials',
+          client_id: 'ax40REVrKWMRBBkLaSfIA452F1IVZYEg',
+          client_secret: process.env.GET_RECORDINGS_CLIENT_SECRET,
+          audience: 'https://api-recording.herokuapp.com/',
+        },
+      },
     },
     recordingDatabase: {
       uri: process.env.RECORDING_DATABASE_URI,

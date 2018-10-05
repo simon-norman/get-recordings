@@ -5,7 +5,7 @@ module.exports = (BaseApiStamp) => {
   const RetryCapableApiStamp = stampit({
     init() {
       axiosRetry(this.axios, {
-        retries: 5,
+        retries: 2,
         retryDelay: axiosRetry.exponentialDelay,
       });
     },

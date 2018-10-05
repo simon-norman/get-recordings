@@ -11,7 +11,7 @@ const checkStampFactoryArgumentsValid = (RetryEnabledApiStamp) => {
   }
 };
 
-module.exports = (RetryEnabledApiStamp) => {
+module.exports = (RetryEnabledApiStamp, recordingsApiAccessTokenConfig) => {
   checkStampFactoryArgumentsValid(RetryEnabledApiStamp);
   const RecordingApiStamp = stampit({
     props: {
@@ -19,8 +19,30 @@ module.exports = (RetryEnabledApiStamp) => {
     },
 
     methods: {
-      saveRecordings(recordings) {
-        return this.post(this.baseRecordingsPath, recordings);
+      async getAccessTokenToRecordingsApi() {
+        return this.post(
+          recordingsApiAccessTokenConfig.accessTokenServerUrl,
+          recordingsApiAccessTokenConfig.credentialsToGetAccessToken,
+        );
+      },
+
+      async saveRecordings(recordings) {
+        let accessToken;
+        try {
+          accessToken = await this.getAccessTokenToRecordingsApi();
+        } catch (error) {
+          throw error;
+        }
+
+        return this.post(
+          this.baseRecordingsPath,
+          recordings,
+          {
+            headers: {
+              authorization: `${accessToken.data.token_type} ${accessToken.data.access_token}`,
+            },
+          }
+        );
       },
     },
   });
