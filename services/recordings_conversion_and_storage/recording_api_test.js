@@ -7,6 +7,7 @@ const RecordingApiStampFactory = require('./recording_api.js');
 
 
 describe('recording_api', () => {
+  let mockAccessToken;
   let mockRecordings;
   let mockSavedRecordings;
   let postStub;
@@ -17,8 +18,6 @@ describe('recording_api', () => {
 
   const setUpMockRetryEnabledApi = () => {
     postStub = sinon.stub();
-    mockSavedRecordings = 'saved recordings';
-    postStub.returns(mockSavedRecordings);
     MockRetryEnabledApiStamp = stampit({
       init() {
         this.post = postStub;
@@ -26,12 +25,37 @@ describe('recording_api', () => {
     });
   };
 
+  const setUpMockAccessTokenApi = () => {
+    mockAccessToken = {
+      data: {
+        token_type: 'json',
+        access_token: 'some access token',
+      },
+    };
+    postStub.onCall(0).returns(mockAccessToken);
+  };
+
+  const setUpMockRecordingsApiEndpoint = () => {
+    mockSavedRecordings = 'saved recordings';
+    postStub.onCall(1).returns(mockSavedRecordings);
+  };
+
   const setUpTests = () => {
     setUpMockRetryEnabledApi();
 
+    setUpMockAccessTokenApi();
+
+    setUpMockRecordingsApiEndpoint();
+
+    const mockRecordingsApiAccessTokenConfig = {
+      accessTokenServerUrl: 'https://fakeurl.com',
+      credentialsToGetAccessToken: 'fake credentials',
+    };
+
     mockRecordings = [{ recordingData: 'data1' }, { recordingData: 'data2' }];
 
-    RecordingApiStamp = RecordingApiStampFactory(MockRetryEnabledApiStamp);
+    RecordingApiStamp
+      = RecordingApiStampFactory(MockRetryEnabledApiStamp, mockRecordingsApiAccessTokenConfig);
     recordingApi = RecordingApiStamp();
   };
 
@@ -43,14 +67,19 @@ describe('recording_api', () => {
     it('should call recording api with specified parameters', async () => {
       await recordingApi.saveRecordings(mockRecordings);
 
-      expect(postStub.calledWithExactly(
+      expect(postStub.secondCall.args).deep.equals([
         '/recordings',
-        mockRecordings
-      )).to.equal(true);
+        mockRecordings,
+        {
+          headers: {
+            authorization: `${mockAccessToken.data.token_type} ${mockAccessToken.data.access_token}`,
+          },
+        },
+      ]);
     });
 
     it('should return the result', async () => {
-      const response = recordingApi.saveRecordings(recordingsCallParams);
+      const response = await recordingApi.saveRecordings(recordingsCallParams);
 
       expect(response).to.equal(mockSavedRecordings);
     });
