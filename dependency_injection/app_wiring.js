@@ -66,10 +66,10 @@ const registerAccuwareApi = () => {
 };
 
 const registerRecordingApi = () => {
-  const recordingApiConfig = config.recordingApi.baseConfig;
   registerDependency('recordingsApiAccessTokenConfig', config.recordingApi.recordingsApiAccessTokenConfig);
   const RecordingApiStamp = registerDependencyFromFactory('RecordingApiStamp', RecordingApiStampFactory);
 
+  const recordingApiConfig = config.recordingApi.baseConfig;
   const recordingApi = RecordingApiStamp({ apiConfig: recordingApiConfig });
   registerDependency('recordingApi', recordingApi);
 };

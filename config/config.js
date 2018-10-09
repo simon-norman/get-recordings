@@ -64,7 +64,9 @@ const config = {
       },
     },
     recordingApi: {
-      baseURL: process.env.RECORDING_API_URL,
+      baseConfig: {
+        baseURL: process.env.RECORDING_API_URL,
+      },
       recordingsApiAccessTokenConfig: {
         accessTokenServerUrl: 'https://recordings.eu.auth0.com/oauth/token',
         credentialsToGetAccessToken: {
@@ -104,7 +106,9 @@ const config = {
       },
     },
     recordingApi: {
-      baseURL: process.env.RECORDING_API_URL,
+      baseConfig: {
+        baseURL: process.env.RECORDING_API_URL,
+      },
       recordingsApiAccessTokenConfig: {
         accessTokenServerUrl: 'https://recordings.eu.auth0.com/oauth/token',
         credentialsToGetAccessToken: {
@@ -144,7 +148,9 @@ const config = {
       },
     },
     recordingApi: {
-      baseURL: process.env.RECORDING_API_URL,
+      baseConfig: {
+        baseURL: process.env.RECORDING_API_URL,
+      },
       recordingsApiAccessTokenConfig: {
         accessTokenServerUrl: 'https://recordings.eu.auth0.com/oauth/token',
         credentialsToGetAccessToken: {
