@@ -1,34 +1,38 @@
 
 const chai = require('chai');
 const sinon = require('sinon');
-const axios = require('axios');
 const sinonChai = require('sinon-chai');
-const newMonitoredSitesRegister = require('./monitored_sites_register_test_instance_factory.js');
+const newUnconvertedRecordingsGetter = require('./unconverted_recordings_getter_test_instance_factory.js');
+const setUpStubbedApis = require('./stubbed_apis_setup');
+const setPromisifiedTimeout = require('./helpers/promisified_timeout');
 
 chai.use(sinonChai);
+const { expect } = chai;
 
 describe('Service gets accuware recordings, ', function () {
-  let monitoredSiteRegister;
+  let unconvertedRecordingsGetter;
+  let recordingApi;
+  let accuwareApi;
+  let stubbedAccuwareApi;
 
-  beforeEach(() => {
-    monitoredSiteRegister = newMonitoredSitesRegister();
+  beforeEach(async () => {
+    ({ unconvertedRecordingsGetter, recordingApi, accuwareApi } = await newUnconvertedRecordingsGetter());
+
+    ({ stubbedAccuwareApi } = setUpStubbedApis({ recordingApi, accuwareApi }));
   });
 
   context('Given that the service is called with an interval period of 5 milliseconds and a site ID', function () {
-    let stubbedAccuwareApi;
-
-    beforeEach(() => {
-      stubbedAccuwareApi = sinon.stub('post', axios).withArgs(fakeAccApiEndpoint);
-
-      const getRecordingsParams = {
+    beforeEach(async () => {
+      const siteConfig = {
         siteId: 1001,
-        intervalPeriodInSeconds: 5,
+        intervalPeriodInSeconds: 0.005,
       };
 
-      monitoredSiteRegister.monitorSite(getRecordingsParams);
+      unconvertedRecordingsGetter.startGettingRecordings(siteConfig);
     });
 
-    it('should call accuware api every 5 milliseconds', function () {
+    it('should call accuware api every 5 milliseconds', async function () {
+      await setPromisifiedTimeout(100);
       expect(stubbedAccuwareApi).to.have.been.calledTwice();
     });
     it('should, on each call, specify an lrrt of 5 seconds');

@@ -7,7 +7,9 @@ module.exports = () => {
       this.checkBaseApiStampArgumentsValid(apiConfig);
       this.axios = axios.create(apiConfig);
 
-      this.get = this.axios.get;
+      this.get = (params) => {
+        this.axios.get(params);
+      };
 
       this.put = this.axios.put;
 

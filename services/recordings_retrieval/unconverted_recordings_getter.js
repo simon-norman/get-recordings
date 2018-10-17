@@ -1,71 +1,72 @@
 
 
-const stampit = require('stampit');
+const UnconvertedRecordingsGetterFactory = (
+  accuwareApi,
+  FunctionPollerFactory,
+  recordingsWriterForUsageAnalysis,
+  logException
+) => {
+  const mapOfSitesToGetRecordingsPollers = new Map();
 
-module.exports = (recordingsWriterForUsageAnalysis, logException) => stampit({
-  props: {
-    recordingsWriterForUsageAnalysis,
-    logException,
-  },
+  const stopGettingRecordings = (siteId) => {
+    const functionPollerToBeStopped = mapOfSitesToGetRecordingsPollers.get(siteId);
 
-  methods: {
-    startGettingUnconvertedRecordings({
-      getRecordingsObject,
-      getRecordings,
-      returnedRecordingsEventName,
-      stopGettingRecordingsForThisSite,
-    }) {
-      this.getRecordingsObject = getRecordingsObject;
-      this.returnedRecordingsEventName = returnedRecordingsEventName;
-      this.stopGettingRecordingsForThisSite = stopGettingRecordingsForThisSite;
+    functionPollerToBeStopped.stopPollFunction(siteId);
+  };
 
-      this.boundHandleApiResponse = this.handleApiResponse.bind(this);
-
-      this.getRecordingsObject.on(returnedRecordingsEventName, this.boundHandleApiResponse);
-
-      getRecordings();
-    },
-
-    handleApiResponse({ response, timestampCallMade }) {
-      response
-        .then(({ data }) => {
-          this.saveRecordingsInUsageAnalysisFormat(data, timestampCallMade);
-        })
-        .catch((error) => {
-          this.handleApiResponseError(error);
-        });
-    },
-
-    saveRecordingsInUsageAnalysisFormat(unconvertedRecordings, timestampCallMade) {
-      try {
-        this.recordingsWriterForUsageAnalysis.saveRecordingsInUsageAnalysisFormat(
-          unconvertedRecordings,
-          timestampCallMade,
-        );
-      } catch (error) {
-        this.logException(error);
-        this.stopListeningForRecordings();
-        this.stopGettingRecordingsForThisSite();
-      }
-    },
-
-    handleApiResponseError(error) {
-      const responseCode = error.response.status;
-      if (responseCode === 401 || responseCode === 400 || responseCode === 403) {
-        this.logException(error);
-        this.stopListeningForRecordings();
-        this.stopGettingRecordingsForThisSite();
-      } else {
-        this.logException(error, { level: 'warning' });
-      }
-    },
-
-    stopListeningForRecordings() {
-      this.getRecordingsObject.removeListener(
-        this.returnedRecordingsEventName,
-        this.boundHandleApiResponse,
+  const saveRecordingsInUsageAnalysisFormat = (
+    unconvertedRecordings,
+    timestampCallMade,
+    siteId
+  ) => {
+    try {
+      recordingsWriterForUsageAnalysis.saveRecordingsInUsageAnalysisFormat(
+        unconvertedRecordings,
+        timestampCallMade,
       );
+    } catch (error) {
+      logException(error);
+      stopGettingRecordings(siteId);
+    }
+  };
+
+  const handleGetRecordingsResult = (result, siteId) => {
+    result
+      .then(({ recordings, timestampCallMade }) => {
+        saveRecordingsInUsageAnalysisFormat(recordings, timestampCallMade, siteId);
+      })
+      .catch((error) => {
+        logException(error);
+        stopGettingRecordings(siteId);
+      });
+  };
+
+  const unconvertedRecordingsGetter = {
+
+    startGettingRecordings(siteConfig) {
+      const functionPoller = FunctionPollerFactory();
+      mapOfSitesToGetRecordingsPollers.set(siteConfig.siteId, functionPoller);
+
+      const functionToPoll = () => {
+        accuwareApi.getDeviceRecordings(siteConfig);
+      };
+
+      const callbackForFunctionResult = (result) => {
+        handleGetRecordingsResult(result, siteConfig.siteId);
+      };
+
+      const pollFunctionConfig = {
+        functionToPoll,
+        pollingIntervalInMilSecs: siteConfig.intervalPeriodInSeconds * 1000,
+        callbackForFunctionResult,
+      };
+
+      functionPoller.pollFunction(pollFunctionConfig);
     },
-  },
-});
+  };
+
+  return unconvertedRecordingsGetter;
+};
+
+module.exports = UnconvertedRecordingsGetterFactory;
 

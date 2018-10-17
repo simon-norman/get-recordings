@@ -2,7 +2,7 @@
 
 const stampit = require('stampit');
 
-module.exports = (AccuwareApiStamp, FunctionPollerStamp, unconvertedRecordingsGetter) => stampit({
+module.exports = (AccuwareApiStamp, FunctionPollerStamp, AccuwareApiPollerStamp) => stampit({
 
   props: {
     AccuwareApiStamp,
@@ -12,8 +12,9 @@ module.exports = (AccuwareApiStamp, FunctionPollerStamp, unconvertedRecordingsGe
   },
 
   methods: {
-    monitorSite({ apiConfig, siteConfig }) {
-      const accuwareApi = AccuwareApiStamp({ apiConfig, siteConfig });
+    monitorSite(siteConfig) {
+      const accuwareApiPoller = AccuwareApiPollerStamp(siteConfig);
+      accuwareApiPoller.startGettingRecordings();
 
       this.setUpGetRecordingsObject(siteConfig, accuwareApi);
       const getRecordings = this.getRecordingsObject.pollFunction.bind(this.getRecordingsObject);
