@@ -32,8 +32,8 @@ const UnconvertedRecordingsGetterFactory = (
 
   const handleGetRecordingsResult = (result, siteId) => {
     result
-      .then(({ recordings, timestampCallMade }) => {
-        saveRecordingsInUsageAnalysisFormat(recordings, timestampCallMade, siteId);
+      .then(({ unconvertedRecordings, timestampCallMade }) => {
+        saveRecordingsInUsageAnalysisFormat(unconvertedRecordings, timestampCallMade, siteId);
       })
       .catch((error) => {
         logException(error);
@@ -47,9 +47,7 @@ const UnconvertedRecordingsGetterFactory = (
       const functionPoller = FunctionPollerFactory();
       mapOfSitesToGetRecordingsPollers.set(siteConfig.siteId, functionPoller);
 
-      const functionToPoll = () => {
-        accuwareApi.getDeviceRecordings(siteConfig);
-      };
+      const functionToPoll = () => accuwareApi.getDeviceRecordings(siteConfig);
 
       const callbackForFunctionResult = (result) => {
         handleGetRecordingsResult(result, siteConfig.siteId);

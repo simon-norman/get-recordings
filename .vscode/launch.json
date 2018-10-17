@@ -303,6 +303,7 @@
         "args": [
             "-u",
             "tdd",
+            "--exit",
             "--timeout",
             "999999",
             "--colors",

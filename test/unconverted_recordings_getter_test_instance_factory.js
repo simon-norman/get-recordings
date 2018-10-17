@@ -7,9 +7,9 @@ const RecoverableInvalidRecordingError = require('../services/error_handling/err
 const InvalidTimestampInRecordingError = require('../services/error_handling/errors/InvalidTimestampInRecordingError.js');
 const BaseApiStampFactory = require('../helpers/base_api/base_api');
 const RetryEnabledApiStampFactory = require('../helpers/base_api/retry_enabled_api');
-const RecordingApiStampFactory = require('../services/recordings_conversion_and_storage/recording_api');
 const AccuwareApiStampFactory = require('../services/recordings_retrieval/accuware_api');
-const EventEmittableStamp = require('../helpers/event_generation/event_emittable_stamp');
+const RecordingApiStampFactory = require('../services/recordings_conversion_and_storage/recording_api');
+const AccessTokensGetterStampFactory = require('../services/authorization/access_tokens_getter');
 const FunctionPollerFactory = require('../services/function_poller/function_poller');
 const RecordingsWriterForUsageAnalysisStampFactory = require('../services/recordings_conversion_and_storage/recordings_writer_for_usage_analysis');
 const UnconvertedRecordingsGetterFactory = require('../services/recordings_retrieval/unconverted_recordings_getter');
@@ -23,8 +23,6 @@ let diContainer;
 let registerDependency;
 let registerDependencyFromFactory;
 let getDependency;
-let accuwareApi;
-let recordingApi;
 
 const getFunctionsFromDiContainer = () => {
   ({
@@ -57,16 +55,24 @@ const registerAccuwareApi = () => {
   const apiConfig = testingConfig.accuwareApi;
 
   const AccuwareApiStamp = registerDependencyFromFactory('AccuwareApiStamp', AccuwareApiStampFactory);
-  accuwareApi = AccuwareApiStamp({ apiConfig });
+  const accuwareApi = AccuwareApiStamp({ apiConfig });
   registerDependency('accuwareApi', accuwareApi);
 };
+
+const registerAccessTokensGetter = () => {
+  const AccessTokensGetterStamp = registerDependencyFromFactory('AccessTokensGetterStamp', AccessTokensGetterStampFactory);
+
+  const accessTokensGetter = AccessTokensGetterStamp();
+  registerDependency('accessTokensGetter', accessTokensGetter);
+};
+
 
 const registerRecordingApi = () => {
   registerDependency('recordingsApiAccessTokenConfig', testingConfig.recordingApi.recordingsApiAccessTokenConfig);
   const RecordingApiStamp = registerDependencyFromFactory('RecordingApiStamp', RecordingApiStampFactory);
 
   const recordingApiConfig = testingConfig.recordingApi.baseConfig;
-  recordingApi = RecordingApiStamp({ apiConfig: recordingApiConfig });
+  const recordingApi = RecordingApiStamp({ apiConfig: recordingApiConfig });
   registerDependency('recordingApi', recordingApi);
 };
 
@@ -75,6 +81,7 @@ const registerApis = () => {
   registerDependencyFromFactory('BaseApiStamp', BaseApiStampFactory);
   registerDependencyFromFactory('RetryEnabledApiStamp', RetryEnabledApiStampFactory);
 
+  registerAccessTokensGetter();
   registerAccuwareApi();
   registerRecordingApi();
 };
@@ -116,15 +123,14 @@ const newUnconvertedRecordingsGetter = async () => {
   registerDependency('logException', sinon.spy());
 
   registerApis();
-  registerDependency('EventEmittableStamp', EventEmittableStamp);
   registerFunctionPoller();
 
   registerDeviceInfoController();
   registerRecordingConverter();
   registerRecordingsWriterForUsageAnalysis();
-  const unconvertedRecordingsGetter = registerUnconvertedRecordingsGetter();
+  registerUnconvertedRecordingsGetter();
 
-  return { unconvertedRecordingsGetter, recordingApi, accuwareApi };
+  return diContainer;
 };
 
 module.exports = newUnconvertedRecordingsGetter;

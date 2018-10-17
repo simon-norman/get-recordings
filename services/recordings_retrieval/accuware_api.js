@@ -12,7 +12,7 @@ module.exports = (RetryEnabledApiStamp) => {
         const finalDeviceRecordingsPath = this.baseDeviceRecordingsPath.replace('siteId', siteId);
 
         try {
-          const response = await this.get(
+          const unconvertedRecordings = await this.get(
             finalDeviceRecordingsPath,
             {
               lrrt: intervalPeriodInSeconds,
@@ -22,7 +22,7 @@ module.exports = (RetryEnabledApiStamp) => {
             },
           );
 
-          return { response, timestampCallMade };
+          return { unconvertedRecordings, timestampCallMade };
         } catch (error) {
           throw error;
         }
