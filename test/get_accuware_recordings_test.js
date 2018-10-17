@@ -30,7 +30,7 @@ describe('Service gets accuware recordings, ', function () {
 
     siteConfig = {
       siteId: 1001,
-      intervalPeriodInSeconds: 0.005,
+      intervalPeriodInSeconds: 0.010,
     };
 
     const accuwareApiStubConfig = Object.assign(siteConfig, { accuwareApi, unconvertedRecordings });
@@ -40,19 +40,27 @@ describe('Service gets accuware recordings, ', function () {
     stubGetAccessToken({ accessTokensGetter });
   });
 
-  context('Given that the service is called with an interval period of 5 milliseconds and a site ID', function () {
+  context('Given that the service is called with an interval period of 5 milliseconds and a site ID', async function () {
     beforeEach(async () => {
       unconvertedRecordingsGetter.startGettingRecordings(siteConfig);
+
+      await setPromisifiedTimeout(25);
     });
 
-    it('should call accuware api every 5 milliseconds', async function () {
-      await setPromisifiedTimeout(100);
-      expect(getAccuwareRecordingsStub).to.have.been.calledTwice();
+    it('should call accuware api every 10 milliseconds', function () {
+      expect(getAccuwareRecordingsStub.callCount).equals(2);
     });
-    it('should, on each call, specify an lrrt of 5 seconds');
+
+    it(`should, on each call, specify the site ID, lrrt equal to the intervalPeriod, and that devicesToInclude, 
+      areas, and includeLocations equal "yes"`, function () {
+      getAccuwareRecordingsStub.args.forEach((argsInGetRecsCall) => {
+        expect(argsInGetRecsCall[0]).equals(`/sites/${siteConfig.siteId}/stations/`);
+        expect(argsInGetRecsCall[1].lrrt).equals(0.01);
+        expect(argsInGetRecsCall[1].includeLocations).equals('yes');
+        expect(argsInGetRecsCall[1].devicesToInclude).equals('all');
+        expect(argsInGetRecsCall[1].areas).equals('yes');
+      });
+    });
     it('should, on each call, specify the site id');
-    it('should, on each call, specify that includeLocations = "yes"');
-    it('should, on each call, specify that devicesToInclude = "yes"');
-    it('should, on each call, specify that areas = "yes"');
   });
 });
