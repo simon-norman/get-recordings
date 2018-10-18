@@ -1,5 +1,6 @@
 
 const chai = require('chai');
+const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 const newUnconvertedRecordingsGetter = require('./unconverted_recordings_getter_test_instance_factory.js');
 const setPromisifiedTimeout = require('./helpers/promisified_timeout');
@@ -11,7 +12,7 @@ const unconvertedRecordingsFactory = require('./test_data_factories/unconverted_
 chai.use(sinonChai);
 const { expect } = chai;
 
-describe('Service gets accuware recordings, ', function () {
+describe('Service converts and posts accuware recordings to recording api, ', function () {
   let unconvertedRecordingsGetter;
   let siteConfig;
   let getAccuwareRecordingsStub;
@@ -43,34 +44,29 @@ describe('Service gets accuware recordings, ', function () {
     stubApis({ diContainer, unconvertedRecordings });
   });
 
-  context('Given that the service is called with an interval period and a site ID', async function () {
-    let expectedParamsToBePassedToAccApi;
+  context('Given that valid recordings are returned by accuware, ', async function () {
+    context('Given that valid recordings are returned by accuware, ', async function () {
+      let expectedParamsToBePassedToAccApi;
 
-    beforeEach(async () => {
-      unconvertedRecordingsGetter.startGettingRecordings(siteConfig);
+      beforeEach(async () => {
+        unconvertedRecordingsGetter.startGettingRecordings(siteConfig);
 
-      expectedParamsToBePassedToAccApi = [
-        `/sites/${siteConfig.siteId}/stations/`,
-        {
-          lrrt: siteConfig.intervalPeriodInSeconds,
-          includeLocations: 'yes',
-          devicesToInclude: 'all',
-          areas: 'yes',
-        },
-      ];
+        expectedParamsToBePassedToAccApi = [
+          `/sites/${siteConfig.siteId}/stations/`,
+          {
+            lrrt: siteConfig.intervalPeriodInSeconds,
+            includeLocations: 'yes',
+            devicesToInclude: 'all',
+            areas: 'yes',
+          },
+        ];
 
-      await setPromisifiedTimeout(25);
-    });
+        await setPromisifiedTimeout(25);
+      });
 
-    it('should call accuware api every X seconds, where X equals the interval period specified', function () {
-      expect(getAccuwareRecordingsStub.callCount).equals(2);
-    });
-
-    it('should, on each call, specify the site ID and lrrt (equal to intervalPeriod) equal to those specified, and default the other params', function () {
-      getAccuwareRecordingsStub.args.forEach((argsInGetRecsCall) => {
-        expect(argsInGetRecsCall).deep.equals(expectedParamsToBePassedToAccApi);
+      it('should convert those recordings into a usage analysis format, and post them to the recording api', function () {
+        expect(getAccuwareRecordingsStub.callCount).equals(2);
       });
     });
-    it('should, on each call, specify the site id');
   });
 });

@@ -14,7 +14,7 @@ const stubGetAccessToken = (accessTokenApiWithConfig) => {
     accessTokenApiWithConfig.credentialsToGetAccessToken
   ).returns(accessTokenForRecordingsApi);
 
-  return getAccessTokenStub;
+  return { getAccessTokenStub, accessTokenForRecordingsApi };
 };
 
 module.exports = stubGetAccessToken;
