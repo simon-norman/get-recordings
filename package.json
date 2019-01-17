@@ -1,30 +1,51 @@
 {
-  "name": "track-api",
+  "name": "get-recordings",
   "version": "1.0.0",
-  "description": "Api to retrieve tracking data on people within a given space",
-  "main": "index.js",
+  "description": "Api to retrieve recordings of people`s locations within a given space",
+  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.js",
+    "start-test-heroku": "heroku ps:scale web=1 -a test-get-recordings",
+    "stop-test-heroku": "heroku ps:scale web=0 -a test-get-recordings",
+    "unit-test": "nyc mocha --timeout=10000 \"**/*_test.js\"",
+    "dev": "node app",
+    "load-device-category-lookup": "node ./app_admin_scripts/device_category_lookup_loader.js"
+  },
+  "engines": {
+    "node": "^8.12.0"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SpacelabUK/track-api.git"
+    "url": "git+https://github.com/SpacelabUK/get-recordings.git"
   },
   "author": "Simon Norman",
   "license": "UNLICENSED",
   "bugs": {
-    "url": "https://github.com/SpacelabUK/track-api/issues"
+    "url": "https://github.com/SpacelabUK/get-recordings/issues"
   },
-  "homepage": "https://github.com/SpacelabUK/track-api#readme",
+  "homepage": "https://github.com/SpacelabUK/get-recordings#readme",
   "devDependencies": {
     "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
     "eslint": "^4.19.1",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-chai-friendly": "^0.4.1",
     "eslint-plugin-import": "^2.11.0",
+    "eslint-plugin-mocha": "^5.2.0",
     "mocha": "^5.0.5",
-    "parse-fn-args": "^1.0.1",
+    "nyc": "^12.0.2",
     "sinon": "^4.5.0",
-    "supertest": "^3.0.0"
+    "supertest": "^3.3.0"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "axios-error": "^0.7.8",
+    "axios-retry": "^3.1.1",
+    "csvtojson": "^2.0.8",
+    "express": "^4.16.3",
+    "mongoose": "^5.2.17",
+    "parse-fn-args": "^1.0.1",
+    "raven-wrapper": "^1.0.7",
+    "stampit": "^4.2.0"
   }
 }
